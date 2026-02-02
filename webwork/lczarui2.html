@@ -1,0 +1,89 @@
+<!DOCTYPE HTML>
+<HTML>
+<head>
+<meta charset="UTF-8">
+<style type="text/css">
+</style>
+</head>
+<body>
+<div id="candiv" style="position: absolute; top: 50px; left: 50px;">
+<canvas id="canvas" width="500" height="500">
+!supported
+</canvas>
+</div>
+<script type = "text/javascript">
+window.addEventListener('load', winloaded, false);
+function winloaded(){
+app();
+}
+function app(){
+var canv = document.getElementById("canvas");
+if(!canv || !canv.getContext){
+return;
+}
+var ctx = canv.getContext("2d");
+if(!ctx){
+return;
+}
+var cAngle = 0;
+var circle = {ctrX: 250, ctrY: 250,radius: 100, angle: 0};
+var ball = {x:0, y:0, speed: .05};
+var ball1 ={x:0, y:0, speed: .05};
+var cRadius = 0;
+
+
+function draw(){
+
+function eMouseMove(event) {
+	candiv = document.getElementById("candiv");
+        if (event.layerX || event.layerX == 0) {
+            mouseX = event.layerX;
+            mouseY = event.layerY;
+        } else if (event.offsetX || event.offsetX == 0) {
+            mouseX = event.offsetX;
+            mouseY = event.offsetY;
+			
+        }
+		cRadius = circle.ctrX + mouseX;
+		var p2 = {x: mouseX, y:mouseY};
+		cAngle = ((Math.atan2((circle.ctrX - p2.x),(circle.ctrY - p2.y)))*180)/Math.PI;
+
+    }
+		
+	console.log(cAngle);
+	
+ball.x = circle.ctrX + Math.cos(cAngle)* circle.radius;
+ball.y = circle.ctrY + Math.sin(cAngle)* circle.radius;
+cAngle += ball.speed;
+
+ctx.fillStyle ='#eeeeee';
+ctx.fillRect(0,0, canvas.width, canvas.height);
+ctx.strokeStyle='#000000';
+ctx.strokeRect(0,0,canvas.width, canvas.height)
+//ctx.save();
+ctx.strokeStyle ="#000000";
+ctx.beginPath();
+ctx.arc(ball.x,ball.y,15,0,Math.PI*2,true);
+ctx.stroke();
+ctx.closePath();
+ctx.setTransform(1,0,0,1,0,0);
+var angleInRadian = 45 * Math.PI / 180;
+ctx.translate(circle.ctrX + (0.05 * 99), circle.ctrY + (0.05 * 99));
+ctx.rotate(cAngle);
+ctx.strokeStyle ="#000000";
+ctx.beginPath();
+ctx.arc(circle.ctrX - 250,circle.ctrY - 250,circle.radius,0,Math.PI*2,true);
+ctx.stroke();
+ctx.closePath();
+//ctx.restore();
+canv.addEventListener('mousemove', eMouseMove, false);
+}
+
+	
+const FRAME_RATE = 30;
+var intervalTime = 1000/FRAME_RATE;
+setInterval(draw, intervalTime);
+}
+</script>
+</body>
+</HTML>

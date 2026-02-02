@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LZ-Dial Component Demo</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #eee;
+            font-family: sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            color: #00ff9d;
+        }
+
+        #console {
+            margin-top: 20px;
+            padding: 10px;
+            background: #000;
+            border: 1px solid #333;
+            width: 300px;
+            height: 100px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+    <!-- Load Component -->
+    <script src="lz-dial.js"></script>
+</head>
+
+<body>
+
+    <h1>Lawn Czar</h1>
+    <p>Click the FAB in the corner to open the dial.</p>
+
+    <div id="console">Log...</div>
+
+    <!-- The Component -->
+    <lz-dial radius="140" justify="left">
+        <!-- Trigger Slot (Optional) -->
+        <div slot="trigger-content" style="font-size:24px;">+</div>
+
+        <!-- Items: We'll use placemholder images from a public placeholder service or just inline SVGs if we had them. 
+             For now, I'll rely on the component's fallback rectangle if image is missing, 
+             or point to the ones in previous folder if relative path works. -->
+
+
+        <lz-item label="Home" icon="https://api.iconify.design/mdi:home.svg?color=%23ffffff" href="#home"></lz-item>
+        <lz-item label="Map" icon="https://api.iconify.design/mdi:map-marker.svg?color=%23ffffff" href="#map"></lz-item>
+        <lz-item label="Sync" icon="https://api.iconify.design/mdi:sync.svg?color=%23ffffff" href="#sync"></lz-item>
+        <lz-item label="Settings" icon="https://api.iconify.design/mdi:cog.svg?color=%23ffffff"
+            href="#settings"></lz-item>
+        <lz-item label="Profile" icon="https://api.iconify.design/mdi:account.svg?color=%23ffffff"
+            href="#profile"></lz-item>
+        <lz-item label="Help" icon="https://api.iconify.design/mdi:help-circle.svg?color=%23ffffff"
+            href="#help"></lz-item>
+
+
+    </lz-dial>
+
+    <script>
+        const dial = document.querySelector('lz-dial');
+        const logger = document.getElementById('console');
+
+
+
+        dial.addEventListener('lz-change', (e) => {
+            const label = e.detail.item.getAttribute('label');
+            const p = document.createElement('div');
+            p.textContent = `> Active: ${label}`;
+            logger.prepend(p);
+        });
+    </script>
+</body>
+
+</html>
