@@ -243,6 +243,137 @@ class LawnCzarDial extends HTMLElement {
                 text-shadow: 0 0 10px var(--primary);
             }
 
+            /* Content Overlay Modal */
+            #content-overlay {
+                position: fixed;
+                top: 0; left: 0; right: 0; bottom: 0;
+                background: rgba(0, 0, 0, 0.9);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+                display: none;
+                align-items: center;
+                justify-content: center;
+                z-index: 10000;
+                opacity: 0;
+                transition: opacity 0.3s;
+            }
+
+            #content-overlay.active {
+                display: flex;
+                opacity: 1;
+            }
+
+            #content-container {
+                background: var(--bg);
+                border: 2px solid var(--primary);
+                border-radius: 12px;
+                padding: 30px;
+                max-width: 90%;
+                max-height: 90%;
+                overflow: auto;
+                position: relative;
+                box-shadow: 0 10px 50px rgba(0, 255, 157, 0.3);
+            }
+
+            #content-close {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background: var(--primary);
+                color: #000;
+                border: none;
+                font-size: 24px;
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: bold;
+                transition: transform 0.2s;
+            }
+
+            #content-close:hover {
+                transform: scale(1.1);
+            }
+
+            #content-body {
+                margin-top: 20px;
+            }
+
+            /* Media Styles */
+            #content-body video,
+            #content-body audio {
+                width: 100%;
+                max-width: 800px;
+                border-radius: 8px;
+            }
+
+            #content-body iframe {
+                width: 100%;
+                height: 500px;
+                border: none;
+                border-radius: 8px;
+            }
+
+            /* Form Styles */
+            #content-body form {
+                max-width: 500px;
+            }
+
+            #content-body input,
+            #content-body textarea {
+                width: 100%;
+                padding: 12px;
+                margin: 10px 0;
+                background: rgba(255, 255, 255, 0.1);
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                border-radius: 6px;
+                color: var(--text);
+                font-size: 16px;
+                font-family: inherit;
+            }
+
+            #content-body input:focus,
+            #content-body textarea:focus {
+                outline: none;
+                border-color: var(--primary);
+                box-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
+            }
+
+            #content-body button[type="submit"] {
+                background: var(--primary);
+                color: #000;
+                border: none;
+                padding: 12px 30px;
+                border-radius: 6px;
+                font-size: 16px;
+                font-weight: bold;
+                cursor: pointer;
+                transition: transform 0.2s;
+                margin-top: 10px;
+            }
+
+            #content-body button[type="submit"]:hover {
+                transform: scale(1.05);
+            }
+
+            #content-body label {
+                display: block;
+                margin-top: 15px;
+                margin-bottom: 5px;
+                color: var(--primary);
+                font-weight: bold;
+            }
+
+            #content-title {
+                font-size: 28px;
+                font-weight: bold;
+                color: var(--primary);
+                margin-bottom: 20px;
+            }
+
         </style>
 
         <div id="overlay">
@@ -258,6 +389,15 @@ class LawnCzarDial extends HTMLElement {
         <div id="trigger">
             <slot name="trigger-content">MENU</slot>
         </div>
+
+        <!-- Content Overlay Modal -->
+        <div id="content-overlay">
+            <div id="content-container">
+                <button id="content-close">×</button>
+                <div id="content-title"></div>
+                <div id="content-body"></div>
+            </div>
+        </div>
         `;
 
         this.els = {
@@ -266,13 +406,20 @@ class LawnCzarDial extends HTMLElement {
             container: this.shadowRoot.getElementById('dial-container'),
             canvas: this.shadowRoot.querySelector('canvas'),
             ctx: this.shadowRoot.querySelector('canvas').getContext('2d'),
-            itemsSlot: this.shadowRoot.querySelector('slot:not([name])')
+            itemsSlot: this.shadowRoot.querySelector('slot:not([name])'),
+            contentOverlay: this.shadowRoot.getElementById('content-overlay'),
+            contentTitle: this.shadowRoot.getElementById('content-title'),
+            contentBody: this.shadowRoot.getElementById('content-body'),
+            contentClose: this.shadowRoot.getElementById('content-close')
         };
     }
 
     setupEvents() {
         this.els.trigger.addEventListener('click', () => this.toggle());
         this.els.itemsSlot.addEventListener('slotchange', () => this.updateItems());
+        this.els.contentClose.addEventListener('click', () => this.hideContent());
+
+
 
         // Drag Interaction on Overlay
         const start = (e) => {
@@ -419,9 +566,19 @@ class LawnCzarDial extends HTMLElement {
         const end = () => {
             clearTimeout(this.longPressTimer);
             if (!this.hasMoved && this.clickedIcon && !this.isSliding) {
-                // Handle Click Navigation
-                if (this.clickedIcon.hasAttribute('active') && this.clickedIcon.hasAttribute('href')) {
-                    window.location.href = this.clickedIcon.getAttribute('href');
+                // Handle Click - Check for inline content first, then href
+                if (this.clickedIcon.hasAttribute('active')) {
+                    // Check for inline content types
+                    if (this.clickedIcon.hasAttribute('data-audio') ||
+                        this.clickedIcon.hasAttribute('data-video') ||
+                        this.clickedIcon.hasAttribute('data-email') ||
+                        this.clickedIcon.hasAttribute('data-phone') ||
+                        this.clickedIcon.hasAttribute('data-map') ||
+                        this.clickedIcon.hasAttribute('data-iframe')) {
+                        this.showContent(this.clickedIcon);
+                    } else if (this.clickedIcon.hasAttribute('href')) {
+                        window.location.href = this.clickedIcon.getAttribute('href');
+                    }
                 }
             }
             this.isDragging = false;
@@ -468,6 +625,110 @@ class LawnCzarDial extends HTMLElement {
             this.removeAttribute('open');
             document.body.style.overflow = '';
         }
+    }
+
+    showContent(item) {
+        const label = item.getAttribute('label') || 'Content';
+        this.els.contentTitle.textContent = label;
+        this.els.contentBody.innerHTML = '';
+
+        // Audio
+        if (item.hasAttribute('data-audio')) {
+            const audioSrc = item.getAttribute('data-audio');
+            const audio = document.createElement('audio');
+            audio.controls = true;
+            audio.autoplay = item.hasAttribute('data-autoplay');
+            audio.src = audioSrc;
+            this.els.contentBody.appendChild(audio);
+        }
+
+        // Video
+        else if (item.hasAttribute('data-video')) {
+            const videoSrc = item.getAttribute('data-video');
+            const video = document.createElement('video');
+            video.controls = true;
+            video.autoplay = item.hasAttribute('data-autoplay');
+            video.src = videoSrc;
+            this.els.contentBody.appendChild(video);
+        }
+
+        // Email Form
+        else if (item.hasAttribute('data-email')) {
+            const emailTo = item.getAttribute('data-email');
+            const form = document.createElement('form');
+            form.innerHTML = `
+                <label>To:</label>
+                <input type="email" name="to" value="${emailTo}" readonly>
+                
+                <label>Subject:</label>
+                <input type="text" name="subject" placeholder="Enter subject" required>
+                
+                <label>Message:</label>
+                <textarea name="message" rows="6" placeholder="Enter your message" required></textarea>
+                
+                <button type="submit">Send Email</button>
+            `;
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const subject = formData.get('subject');
+                const message = formData.get('message');
+                window.location.href = `mailto:${emailTo}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+                this.hideContent();
+            });
+            this.els.contentBody.appendChild(form);
+        }
+
+        // Phone Dialer
+        else if (item.hasAttribute('data-phone')) {
+            const phoneNumber = item.getAttribute('data-phone');
+            const phoneDiv = document.createElement('div');
+            phoneDiv.innerHTML = `
+                <p style="font-size: 24px; margin: 20px 0; text-align: center;">
+                    <a href="tel:${phoneNumber}" style="color: var(--primary); text-decoration: none; font-weight: bold;">
+                        📞 ${phoneNumber}
+                    </a>
+                </p>
+                <p style="text-align: center; color: #aaa;">
+                    Click the number to call
+                </p>
+            `;
+            this.els.contentBody.appendChild(phoneDiv);
+        }
+
+        // Map
+        else if (item.hasAttribute('data-map')) {
+            const address = item.getAttribute('data-map');
+            const iframe = document.createElement('iframe');
+            iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
+            iframe.style.width = '100%';
+            iframe.style.height = '500px';
+            iframe.style.border = 'none';
+            iframe.style.borderRadius = '8px';
+            this.els.contentBody.appendChild(iframe);
+        }
+
+        // Generic iframe
+        else if (item.hasAttribute('data-iframe')) {
+            const iframeSrc = item.getAttribute('data-iframe');
+            const iframe = document.createElement('iframe');
+            iframe.src = iframeSrc;
+            this.els.contentBody.appendChild(iframe);
+        }
+
+        // Show overlay
+        this.els.contentOverlay.classList.add('active');
+    }
+
+    hideContent() {
+        this.els.contentOverlay.classList.remove('active');
+        // Clean up media
+        const media = this.els.contentBody.querySelectorAll('audio, video');
+        media.forEach(m => {
+            m.pause();
+            m.src = '';
+        });
+        this.els.contentBody.innerHTML = '';
     }
 
     checkSnapFeedback() {

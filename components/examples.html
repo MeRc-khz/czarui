@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LZ-Dial Configuration Examples</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #00ff9d;
+            font-size: 48px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(0, 255, 157, 0.5);
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #aaa;
+            margin-bottom: 50px;
+            font-size: 18px;
+        }
+
+        .examples-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 50px;
+        }
+
+        .example-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 30px;
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .example-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 157, 0.2);
+            border-color: rgba(0, 255, 157, 0.3);
+        }
+
+        .example-card h2 {
+            color: #00d2ff;
+            margin-bottom: 15px;
+            font-size: 24px;
+        }
+
+        .example-card p {
+            color: #ccc;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .code-block {
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            line-height: 1.5;
+        }
+
+        .code-block code {
+            color: #00ff9d;
+        }
+
+        .attribute-tag {
+            display: inline-block;
+            background: rgba(0, 255, 157, 0.2);
+            color: #00ff9d;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin: 4px;
+            font-family: monospace;
+        }
+
+        .demo-area {
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            margin-top: 20px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .info-section {
+            background: rgba(0, 210, 255, 0.1);
+            border-left: 4px solid #00d2ff;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 30px 0;
+        }
+
+        .info-section h3 {
+            color: #00d2ff;
+            margin-bottom: 10px;
+        }
+
+        .info-section ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .info-section li {
+            padding: 8px 0;
+            padding-left: 25px;
+            position: relative;
+        }
+
+        .info-section li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00ff9d;
+            font-weight: bold;
+        }
+
+        /* Custom theme examples */
+        #red-theme {
+            --primary: #ff6b6b;
+        }
+
+        #blue-theme {
+            --primary: #4dabf7;
+        }
+
+        #purple-theme {
+            --primary: #9775fa;
+        }
+
+        .theme-preview {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+
+        .red {
+            background: #ff6b6b;
+        }
+
+        .blue {
+            background: #4dabf7;
+        }
+
+        .purple {
+            background: #9775fa;
+        }
+
+        .green {
+            background: #00ff9d;
+        }
+    </style>
+    <script src="lz-dial.js"></script>
+</head>
+
+<body>
+    <div class="container">
+        <h1>🎯 LZ-Dial Configuration</h1>
+        <p class="subtitle">Interactive examples showing different configurations</p>
+
+        <div class="info-section">
+            <h3>📋 Quick Configuration Reference</h3>
+            <ul>
+                <li><strong>radius</strong> - Size of the dial circle (default: 120px)</li>
+                <li><strong>justify</strong> - FAB position: left, center, or right (default: center)</li>
+                <li><strong>Custom trigger</strong> - Use slot="trigger-content" to customize FAB</li>
+                <li><strong>CSS variables</strong> - Override --primary, --bg, --text for theming</li>
+            </ul>
+        </div>
+
+        <div class="examples-grid">
+            <!-- Example 1: Default -->
+            <div class="example-card">
+                <h2>1. Default Configuration</h2>
+                <p>Basic setup with default settings. FAB centered, standard radius.</p>
+
+                <div class="code-block"><code>&lt;lz-dial&gt;
+  &lt;lz-item label="Home" icon="..." href="#home"&gt;&lt;/lz-item&gt;
+  &lt;lz-item label="Settings" icon="..." href="#settings"&gt;&lt;/lz-item&gt;
+  &lt;lz-item label="Profile" icon="..." href="#profile"&gt;&lt;/lz-item&gt;
+&lt;/lz-dial&gt;</code></div>
+
+                <div class="demo-area">
+                    <lz-dial>
+                        <lz-item label="Home" icon="https://api.iconify.design/mdi:home.svg?color=%23ffffff"
+                            href="#home"></lz-item>
+                        <lz-item label="Settings" icon="https://api.iconify.design/mdi:cog.svg?color=%23ffffff"
+                            href="#settings"></lz-item>
+                        <lz-item label="Profile" icon="https://api.iconify.design/mdi:account.svg?color=%23ffffff"
+                            href="#profile"></lz-item>
+                    </lz-dial>
+                </div>
+            </div>
+
+            <!-- Example 2: Left Justified -->
+            <div class="example-card">
+                <h2>2. Left Justified</h2>
+                <p>FAB positioned on the left edge. Great for right-handed users.</p>
+
+                <span class="attribute-tag">justify="left"</span>
+
+                <div class="code-block"><code>&lt;lz-dial justify="left"&gt;
+  &lt;!-- items --&gt;
+&lt;/lz-dial&gt;</code></div>
+
+                <div class="demo-area">
+                    <lz-dial justify="left">
+                        <lz-item label="Home" icon="https://api.iconify.design/mdi:home.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Search"
+                            icon="https://api.iconify.design/mdi:magnify.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Favorites"
+                            icon="https://api.iconify.design/mdi:heart.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Settings"
+                            icon="https://api.iconify.design/mdi:cog.svg?color=%23ffffff"></lz-item>
+                    </lz-dial>
+                </div>
+            </div>
+
+            <!-- Example 3: Right Justified -->
+            <div class="example-card">
+                <h2>3. Right Justified</h2>
+                <p>FAB positioned on the right edge. Ideal for left-handed users.</p>
+
+                <span class="attribute-tag">justify="right"</span>
+
+                <div class="code-block"><code>&lt;lz-dial justify="right"&gt;
+  &lt;!-- items --&gt;
+&lt;/lz-dial&gt;</code></div>
+
+                <div class="demo-area">
+                    <lz-dial justify="right">
+                        <lz-item label="Dashboard"
+                            icon="https://api.iconify.design/mdi:view-dashboard.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Analytics"
+                            icon="https://api.iconify.design/mdi:chart-line.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Reports"
+                            icon="https://api.iconify.design/mdi:file-document.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Settings"
+                            icon="https://api.iconify.design/mdi:cog.svg?color=%23ffffff"></lz-item>
+                    </lz-dial>
+                </div>
+            </div>
+
+            <!-- Example 4: Large Radius -->
+            <div class="example-card">
+                <h2>4. Large Radius</h2>
+                <p>Bigger dial for more dramatic effect and easier interaction.</p>
+
+                <span class="attribute-tag">radius="180"</span>
+
+                <div class="code-block"><code>&lt;lz-dial radius="180"&gt;
+  &lt;!-- items --&gt;
+&lt;/lz-dial&gt;</code></div>
+
+                <div class="demo-area">
+                    <lz-dial radius="180">
+                        <lz-item label="Create"
+                            icon="https://api.iconify.design/mdi:plus-circle.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Edit"
+                            icon="https://api.iconify.design/mdi:pencil.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Delete"
+                            icon="https://api.iconify.design/mdi:delete.svg?color=%23ffffff"></lz-item>
+                    </lz-dial>
+                </div>
+            </div>
+
+            <!-- Example 5: Custom Trigger -->
+            <div class="example-card">
+                <h2>5. Custom Trigger Button</h2>
+                <p>Customize the FAB button with your own content.</p>
+
+                <span class="attribute-tag">slot="trigger-content"</span>
+
+                <div class="code-block"><code>&lt;lz-dial&gt;
+  &lt;div slot="trigger-content"&gt;☰&lt;/div&gt;
+  &lt;!-- items --&gt;
+&lt;/lz-dial&gt;</code></div>
+
+                <div class="demo-area">
+                    <lz-dial>
+                        <div slot="trigger-content" style="font-size:32px;">☰</div>
+                        <lz-item label="Home" icon="https://api.iconify.design/mdi:home.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="About"
+                            icon="https://api.iconify.design/mdi:information.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Contact"
+                            icon="https://api.iconify.design/mdi:email.svg?color=%23ffffff"></lz-item>
+                    </lz-dial>
+                </div>
+            </div>
+
+            <!-- Example 6: Red Theme -->
+            <div class="example-card">
+                <h2>6. Custom Theme (Red)</h2>
+                <p><span class="theme-preview red"></span>Override CSS variables for custom colors.</p>
+
+                <span class="attribute-tag">--primary: #ff6b6b</span>
+
+                <div class="code-block"><code>&lt;style&gt;
+  #red-theme { --primary: #ff6b6b; }
+&lt;/style&gt;
+&lt;lz-dial id="red-theme"&gt;...&lt;/lz-dial&gt;</code></div>
+
+                <div class="demo-area">
+                    <lz-dial id="red-theme">
+                        <lz-item label="Alert"
+                            icon="https://api.iconify.design/mdi:alert.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Warning"
+                            icon="https://api.iconify.design/mdi:alert-circle.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Error"
+                            icon="https://api.iconify.design/mdi:close-circle.svg?color=%23ffffff"></lz-item>
+                    </lz-dial>
+                </div>
+            </div>
+
+            <!-- Example 7: Blue Theme -->
+            <div class="example-card">
+                <h2>7. Custom Theme (Blue)</h2>
+                <p><span class="theme-preview blue"></span>Professional blue color scheme.</p>
+
+                <span class="attribute-tag">--primary: #4dabf7</span>
+
+                <div class="code-block"><code>&lt;style&gt;
+  #blue-theme { --primary: #4dabf7; }
+&lt;/style&gt;
+&lt;lz-dial id="blue-theme"&gt;...&lt;/lz-dial&gt;</code></div>
+
+                <div class="demo-area">
+                    <lz-dial id="blue-theme">
+                        <lz-item label="Messages"
+                            icon="https://api.iconify.design/mdi:message.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Calls"
+                            icon="https://api.iconify.design/mdi:phone.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Video"
+                            icon="https://api.iconify.design/mdi:video.svg?color=%23ffffff"></lz-item>
+                    </lz-dial>
+                </div>
+            </div>
+
+            <!-- Example 8: Purple Theme -->
+            <div class="example-card">
+                <h2>8. Custom Theme (Purple)</h2>
+                <p><span class="theme-preview purple"></span>Creative purple aesthetic.</p>
+
+                <span class="attribute-tag">--primary: #9775fa</span>
+
+                <div class="code-block"><code>&lt;style&gt;
+  #purple-theme { --primary: #9775fa; }
+&lt;/style&gt;
+&lt;lz-dial id="purple-theme"&gt;...&lt;/lz-dial&gt;</code></div>
+
+                <div class="demo-area">
+                    <lz-dial id="purple-theme">
+                        <lz-item label="Design"
+                            icon="https://api.iconify.design/mdi:palette.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Art" icon="https://api.iconify.design/mdi:brush.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Music"
+                            icon="https://api.iconify.design/mdi:music.svg?color=%23ffffff"></lz-item>
+                    </lz-dial>
+                </div>
+            </div>
+
+            <!-- Example 9: Many Items -->
+            <div class="example-card">
+                <h2>9. Multiple Items</h2>
+                <p>The dial automatically distributes items evenly around the circle.</p>
+
+                <div class="code-block"><code>&lt;lz-dial&gt;
+  &lt;!-- 8 items --&gt;
+&lt;/lz-dial&gt;</code></div>
+
+                <div class="demo-area">
+                    <lz-dial radius="150">
+                        <lz-item label="Home" icon="https://api.iconify.design/mdi:home.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Search"
+                            icon="https://api.iconify.design/mdi:magnify.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Favorites"
+                            icon="https://api.iconify.design/mdi:heart.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Settings"
+                            icon="https://api.iconify.design/mdi:cog.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Profile"
+                            icon="https://api.iconify.design/mdi:account.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Messages"
+                            icon="https://api.iconify.design/mdi:message.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Notifications"
+                            icon="https://api.iconify.design/mdi:bell.svg?color=%23ffffff"></lz-item>
+                        <lz-item label="Help"
+                            icon="https://api.iconify.design/mdi:help-circle.svg?color=%23ffffff"></lz-item>
+                    </lz-dial>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-section">
+            <h3>💡 Tips for Best Results</h3>
+            <ul>
+                <li>Use 4-8 items for optimal user experience</li>
+                <li>Keep labels short and descriptive (1-2 words)</li>
+                <li>Use consistent icon style (all outline or all filled)</li>
+                <li>Choose justify position based on your app layout</li>
+                <li>Test on mobile devices for touch interactions</li>
+                <li>Use appropriate radius for your screen size</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 50px; color: #666;">
+            <p>Part of the Lawn Czar UI Project</p>
+            <p style="margin-top: 10px;">See <a href="README.md" style="color: #00ff9d;">README.md</a> for complete
+                documentation</p>
+        </div>
+    </div>
+
+    <script>
+        // Log events from all dials
+        document.querySelectorAll('lz-dial').forEach((dial, index) => {
+            dial.addEventListener('lz-change', (e) => {
+                console.log(`Dial ${index + 1}: ${e.detail.item.getAttribute('label')}`);
+            });
+        });
+    </script>
+</body>
+
+</html>
