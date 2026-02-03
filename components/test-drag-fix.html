@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LZ-Dial Drag Test</title>
+    <style>
+        body {
+            background: #1a1a1a;
+            color: #eee;
+            font-family: sans-serif;
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h1 {
+            color: #00ff9d;
+            margin-bottom: 10px;
+        }
+
+        .instructions {
+            max-width: 600px;
+            padding: 20px;
+            background: rgba(0, 255, 157, 0.1);
+            border: 1px solid #00ff9d;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .instructions h2 {
+            margin-top: 0;
+            color: #00ff9d;
+        }
+
+        .instructions ul {
+            margin: 10px 0;
+        }
+
+        .instructions li {
+            margin: 8px 0;
+        }
+
+        .test-section {
+            display: flex;
+            gap: 40px;
+            margin-top: 20px;
+        }
+
+        .test-case {
+            text-align: center;
+        }
+
+        .test-case h3 {
+            color: #00d2ff;
+        }
+
+        #console {
+            margin-top: 20px;
+            padding: 10px;
+            background: #000;
+            border: 1px solid #333;
+            width: 500px;
+            height: 100px;
+            overflow-y: auto;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+    <!-- Load Component -->
+    <script src="lz-dial.js"></script>
+</head>
+
+<body>
+
+    <div class="instructions">
+        <h2>🧪 Drag Direction Test</h2>
+        <p><strong>Test the fix:</strong> Click the FAB button to open the dial, then try dragging in different areas:</p>
+        <ul>
+            <li>✅ <strong>Drag ON an icon</strong> - Should rotate dial</li>
+            <li>✅ <strong>Drag BETWEEN icons</strong> (on the outer ring) - Should rotate dial in the CORRECT direction</li>
+            <li>✅ <strong>Drag on inner ring</strong> - Should rotate dial</li>
+            <li>✅ <strong>Swipe up/down on icon</strong> - Should snap to next/prev item</li>
+        </ul>
+        <p><strong>Expected behavior:</strong> Dragging clockwise should rotate the dial clockwise, dragging counter-clockwise should rotate counter-clockwise, regardless of where you click on the ring.</p>
+    </div>
+
+    <div class="test-section">
+        <div class="test-case">
+            <h3>Left Justified</h3>
+            <lz-dial id="dial-left" radius="140" justify="left">
+                <div slot="trigger-content" style="font-size:24px;">L</div>
+                <lz-item label="Home" icon="https://api.iconify.design/mdi:home.svg?color=%23ffffff" href="#home"></lz-item>
+                <lz-item label="Map" icon="https://api.iconify.design/mdi:map-marker.svg?color=%23ffffff" href="#map"></lz-item>
+                <lz-item label="Sync" icon="https://api.iconify.design/mdi:sync.svg?color=%23ffffff" href="#sync"></lz-item>
+                <lz-item label="Settings" icon="https://api.iconify.design/mdi:cog.svg?color=%23ffffff" href="#settings"></lz-item>
+                <lz-item label="Profile" icon="https://api.iconify.design/mdi:account.svg?color=%23ffffff" href="#profile"></lz-item>
+                <lz-item label="Help" icon="https://api.iconify.design/mdi:help-circle.svg?color=%23ffffff" href="#help"></lz-item>
+            </lz-dial>
+        </div>
+
+        <div class="test-case">
+            <h3>Center (Default)</h3>
+            <lz-dial id="dial-center" radius="140">
+                <div slot="trigger-content" style="font-size:24px;">C</div>
+                <lz-item label="Home" icon="https://api.iconify.design/mdi:home.svg?color=%23ffffff" href="#home"></lz-item>
+                <lz-item label="Map" icon="https://api.iconify.design/mdi:map-marker.svg?color=%23ffffff" href="#map"></lz-item>
+                <lz-item label="Sync" icon="https://api.iconify.design/mdi:sync.svg?color=%23ffffff" href="#sync"></lz-item>
+                <lz-item label="Settings" icon="https://api.iconify.design/mdi:cog.svg?color=%23ffffff" href="#settings"></lz-item>
+                <lz-item label="Profile" icon="https://api.iconify.design/mdi:account.svg?color=%23ffffff" href="#profile"></lz-item>
+                <lz-item label="Help" icon="https://api.iconify.design/mdi:help-circle.svg?color=%23ffffff" href="#help"></lz-item>
+            </lz-dial>
+        </div>
+
+        <div class="test-case">
+            <h3>Right Justified</h3>
+            <lz-dial id="dial-right" radius="140" justify="right">
+                <div slot="trigger-content" style="font-size:24px;">R</div>
+                <lz-item label="Home" icon="https://api.iconify.design/mdi:home.svg?color=%23ffffff" href="#home"></lz-item>
+                <lz-item label="Map" icon="https://api.iconify.design/mdi:map-marker.svg?color=%23ffffff" href="#map"></lz-item>
+                <lz-item label="Sync" icon="https://api.iconify.design/mdi:sync.svg?color=%23ffffff" href="#sync"></lz-item>
+                <lz-item label="Settings" icon="https://api.iconify.design/mdi:cog.svg?color=%23ffffff" href="#settings"></lz-item>
+                <lz-item label="Profile" icon="https://api.iconify.design/mdi:account.svg?color=%23ffffff" href="#profile"></lz-item>
+                <lz-item label="Help" icon="https://api.iconify.design/mdi:help-circle.svg?color=%23ffffff" href="#help"></lz-item>
+            </lz-dial>
+        </div>
+    </div>
+
+    <div id="console">Log...<br>Open a dial and start dragging to see events.</div>
+
+    <script>
+        const dials = document.querySelectorAll('lz-dial');
+        const logger = document.getElementById('console');
+
+        function log(message) {
+            const p = document.createElement('div');
+            p.textContent = `> ${new Date().toLocaleTimeString()}: ${message}`;
+            logger.prepend(p);
+        }
+
+        dials.forEach(dial => {
+            dial.addEventListener('lz-change', (e) => {
+                const label = e.detail.item.getAttribute('label');
+                const dialId = dial.id;
+                log(`[${dialId}] Active: ${label}`);
+            });
+        });
+
+        log('Ready! Click a FAB to test.');
+    </script>
+</body>
+
+</html>

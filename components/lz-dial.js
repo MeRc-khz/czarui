@@ -230,10 +230,11 @@ class LawnCzarDial extends HTMLElement {
                 color: var(--text);
                 font-size: 12px;
                 text-align: center;
-                transition: transform 0.1s;
-                /* We want icons to stay upright? Or rotate with dial? 
-                   If rotate with dial: nothing special.
-                   If stay upright: Counter rotate. */
+                user-select: none;
+                -webkit-user-select: none;
+                -webkit-user-drag: none;
+                will-change: transform;
+                /* No transition during drag - instant response */
             }
             
             ::slotted(lz-item[active]) {
@@ -276,6 +277,7 @@ class LawnCzarDial extends HTMLElement {
         // Drag Interaction on Overlay
         const start = (e) => {
             if (!this.isOpen) return;
+            e.preventDefault(); // Prevent default drag behavior/ghosting
             this.isDragging = true;
             this.velocity = 0;
             this.targetRotation = null;
@@ -291,17 +293,13 @@ class LawnCzarDial extends HTMLElement {
             this.hasMoved = false;
             this.startPos = { x, y };
 
+            // Get FAB center for rotation calculations
+            const rect = this.els.trigger.getBoundingClientRect();
+            const fabCx = rect.left + rect.width / 2;
+            const fabCy = rect.top + rect.height / 2;
+
             // Check for Inner Ring Hit (if not icon)
             if (!hitIcon) {
-                // Calculate distance from center (visual center)
-                // If justified, the visual center is shifted, but the HOST is centered?
-                // No, :host([justify="right"]) moves the host. 
-                // x, y are screen coords.
-                // We need the center of the FAB.
-                const rect = this.els.trigger.getBoundingClientRect();
-                const fabCx = rect.left + rect.width / 2;
-                const fabCy = rect.top + rect.height / 2;
-
                 const d = Math.hypot(x - fabCx, y - fabCy);
                 // FAB is 40px radius (80px width). Inner ring visual is ~75.
                 // Let's say active zone is 40px to 100px.
@@ -314,10 +312,9 @@ class LawnCzarDial extends HTMLElement {
                 this.innerRingDrag = null;
             }
 
-            // Calculate initial angle relative to screen center
-            let cx = window.innerWidth / 2;
-            let cy = window.innerHeight / 2;
-            this.lastAngle = Math.atan2(y - cy, x - cx);
+            // Calculate initial angle relative to FAB center (not screen center)
+            // This ensures correct rotation direction regardless of justify position
+            this.lastAngle = Math.atan2(y - fabCy, x - fabCx);
 
             // Long Press for Sliding
             this.longPressTimer = setTimeout(() => {
@@ -392,9 +389,13 @@ class LawnCzarDial extends HTMLElement {
                 }
             }
 
-            let cx = window.innerWidth / 2;
-            let cy = window.innerHeight / 2;
-            let currentAngle = Math.atan2(y - cy, x - cx);
+
+            // Calculate angle relative to FAB center (not screen center)
+            // This ensures correct rotation direction regardless of justify position
+            const rect = this.els.trigger.getBoundingClientRect();
+            const fabCx = rect.left + rect.width / 2;
+            const fabCy = rect.top + rect.height / 2;
+            let currentAngle = Math.atan2(y - fabCy, x - fabCx);
 
             let delta = currentAngle - this.lastAngle;
 
@@ -412,6 +413,7 @@ class LawnCzarDial extends HTMLElement {
             this.lastAngle = currentAngle;
 
             this.checkSnapFeedback();
+
         };
 
         const end = () => {
@@ -755,15 +757,27 @@ class LawnCzarItem extends HTMLElement {
                 align-items: center; 
                 justify-content: center;
                 cursor: pointer;
+                user-select: none;
+                -webkit-user-select: none;
             }
             .icon-wrapper {
                 position: relative;
                 width: 60px; height: 60px;
                 display: flex; align-items: center; justify-content: center;
                 border-radius: 50%;
-                transition: transform 0.2s;
+                /* No transition - instant response during drag */
             }
-            img { width: 40px; height: 40px; object-fit: contain; z-index: 2; position: relative;}
+            img { 
+                width: 40px; 
+                height: 40px; 
+                object-fit: contain; 
+                z-index: 2; 
+                position: relative;
+                user-select: none;
+                -webkit-user-select: none;
+                -webkit-user-drag: none;
+                pointer-events: none;
+            }
             .placeholder { width: 40px; height: 40px; background:#333; border-radius:50%; z-index: 2; }
             
             .label { 
