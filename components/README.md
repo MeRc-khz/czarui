@@ -183,6 +183,16 @@ Display rich media and interactive content inline instead of navigating away!
 </lz-item>
 ```
 
+### Overlay Features
+
+When inline content is active, the overlay provides:
+- **Responsive Design**: Adapts to screen size and orientation
+- **Theming**: Inherits component CSS variables (colors, fonts)
+- **Backdrop Blur**: Focuses attention on content
+- **Auto-cleanup**: Media (audio/video) automatically stops when the overlay is closed
+- **Accessibility**: focus management and keyboard navigation support
+
+
 ---
 
 ## Customization
@@ -516,6 +526,25 @@ item.setAttribute('icon', 'dashboard.svg');
 - Reduce number of items (keep under 10)
 - Use optimized SVG icons
 - Ensure icons are properly sized (40x40px recommended)
+
+---
+
+## Recent Updates
+
+### Performance Improvements
+- **Zero Latency Drag**: Removed generic CSS transitions on drag elements and implemented `will-change: transform` to eliminate ghosting and delay.
+- **Optimized Event Handling**: Added `user-select: none` and `pointer-events: none` to prevent default browser drag behaviors interfering with the component.
+
+### Bug Fixes
+- **Drag Direction**: Fixed an issue where dragging on the outer ring caused rotation in the wrong direction. The rotation pivot point now correctly uses the FAB center instead of the screen center.
+
+## Future Roadmap
+
+Potential upcoming features:
+- PDF viewer integration
+- Image gallery/lightbox mode
+- Calendar/Date picker interface
+- Form builder integration
 
 ---
 

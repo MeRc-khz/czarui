@@ -274,7 +274,23 @@
         </div>
     </div>
 
-    <script>
+    <script type="module">
+        import { getIpfsUrl } from './ipfs-config.js';
+
+        // Apply IPFS URLs
+        const applyIpfsMedia = () => {
+            // Audio
+            const audioEl = document.querySelector('lz-item[data-audio*="feb7"]');
+            const audioUrl = getIpfsUrl('AUDIO_SHOW');
+            if (audioEl && audioUrl) audioEl.setAttribute('data-audio', audioUrl);
+
+            // Video
+            const videoEl = document.querySelector('lz-item[data-video*="paperchasers"]');
+            const videoUrl = getIpfsUrl('VIDEO_PAPERCHASERS');
+            if (videoEl && videoUrl) videoEl.setAttribute('data-video', videoUrl);
+        };
+        applyIpfsMedia();
+
         const dial = document.querySelector('lz-dial');
         dial.addEventListener('lz-change', (e) => {
             console.log('Active:', e.detail.item.getAttribute('label'));

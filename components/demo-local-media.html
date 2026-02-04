@@ -109,7 +109,38 @@
 
     </lz-dial>
 
-    <script>
+    <script type="module">
+        import { getIpfsUrl } from './ipfs-config.js';
+
+        // Apply IPFS URLs if configured
+        const applyIpfsMedia = () => {
+            const updates = [
+                { selector: 'lz-item[data-audio*="feb7"]', type: 'audio', key: 'AUDIO_SHOW' },
+                { selector: 'lz-item[data-video*="paperchasers"]', type: 'video', key: 'VIDEO_PAPERCHASERS' },
+                { selector: 'lz-item[data-image*="qrillienlogo"]', type: 'image', key: 'LOGO' }
+            ];
+
+            updates.forEach(({ selector, type, key }) => {
+                const el = document.querySelector(selector);
+                const url = getIpfsUrl(key);
+                
+                if (el && url) {
+                    console.log(`[IPFS] Updating ${type} to ${url}`);
+                    // Update specific data attribute
+                    if (type === 'image') {
+                        el.setAttribute('data-image', url);
+                        el.setAttribute('icon', url);
+                    } else {
+                        el.setAttribute(`data-${type}`, url);
+                    }
+                }
+            });
+        };
+
+        // Run configuration
+        applyIpfsMedia();
+
+        // Existing demo logic
         const dial = document.querySelector('lz-dial');
         const logger = document.getElementById('console');
 
