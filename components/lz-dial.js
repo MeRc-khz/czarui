@@ -165,6 +165,12 @@ class LawnCzarDial extends HTMLElement {
             #trigger:hover {
                 animation: pulse 1.5s infinite;
             }
+            
+            :host([slide-enabled]) #trigger {
+                border: 4px solid #ff0055;
+                animation: none;
+                box-shadow: 0 0 20px #ff0055;
+            }
 
             /* Container for the rotating dial elements */
             #dial-container {
@@ -374,6 +380,112 @@ class LawnCzarDial extends HTMLElement {
                 margin-bottom: 20px;
             }
 
+            /* Fullscreen Mode Overrides */
+            #content-container.fullscreen-mode {
+                width: 100%;
+                height: 100%;
+                max-width: 100%;
+                max-height: 100%;
+                border: none;
+                border-radius: 0;
+                padding: 0;
+                background: #000;
+                display: flex;
+                flex-direction: column;
+            }
+
+            #content-container.fullscreen-mode #content-title {
+                position: absolute;
+                top: 20px;
+                left: 20px;
+                z-index: 10;
+                text-shadow: 0 2px 5px rgba(0,0,0,0.8);
+                pointer-events: none;
+            }
+            
+            #content-container.fullscreen-mode #content-body {
+                margin: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            #content-container.fullscreen-mode #content-close {
+                z-index: 20;
+                background: rgba(0, 255, 157, 0.2);
+                color: #fff;
+            }
+            #content-container.fullscreen-mode #content-close:hover {
+                background: var(--primary);
+                color: #000;
+            }
+
+            /* Custom Media Controls */
+            .media-controls {
+                position: absolute;
+                bottom: 30px;
+                left: 50%;
+                transform: translateX(-50%);
+                width: 80%;
+                max-width: 600px;
+                background: rgba(0, 0, 0, 0.6);
+                backdrop-filter: blur(10px);
+                padding: 15px 25px;
+                border-radius: 30px;
+                display: flex;
+                align-items: center;
+                gap: 15px;
+                border: 1px solid rgba(0, 255, 157, 0.3);
+                z-index: 15;
+                transition: opacity 0.3s;
+            }
+            
+            .media-controls:hover {
+                background: rgba(0, 0, 0, 0.8);
+                border-color: var(--primary);
+            }
+
+            .media-btn {
+                background: none;
+                border: none;
+                color: var(--primary);
+                cursor: pointer;
+                font-size: 24px;
+                padding: 5px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: transform 0.2s;
+            }
+            .media-btn:hover { transform: scale(1.2); color: #fff; }
+            
+            .media-progress-container {
+                flex-grow: 1;
+                height: 6px;
+                background: rgba(255,255,255,0.2);
+                border-radius: 3px;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .media-progress-bar {
+                height: 100%;
+                background: var(--primary);
+                width: 0%;
+                position: relative;
+            }
+            
+            .media-time {
+                font-family: monospace;
+                font-size: 14px;
+                color: #fff;
+                min-width: 100px;
+                text-align: center;
+            }
+
         </style>
 
         <div id="overlay">
@@ -415,7 +527,47 @@ class LawnCzarDial extends HTMLElement {
     }
 
     setupEvents() {
-        this.els.trigger.addEventListener('click', () => this.toggle());
+        // Trigger Click/Double-Click Logic
+        this.els.trigger.addEventListener('click', (e) => {
+            if (this.clickTimer) {
+                clearTimeout(this.clickTimer);
+                this.clickTimer = null;
+                // Double Click: Toggle Slide Mode
+                this.slideEnabled = !this.slideEnabled;
+                if (this.slideEnabled) {
+                    this.setAttribute('slide-enabled', '');
+                    if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
+                } else {
+                    this.removeAttribute('slide-enabled');
+                    if (navigator.vibrate) navigator.vibrate(50);
+                }
+            } else {
+                this.clickTimer = setTimeout(() => {
+                    this.clickTimer = null;
+                    this.toggle();
+                }, 250);
+            }
+        });
+
+        // Trigger Drag Logic
+        const startTriggerDrag = (x, y) => {
+            if (!this.slideEnabled) return;
+            this.isSliding = true;
+            this.isDragging = true;
+            this.startPos = { x, y };
+            const rect = this.getBoundingClientRect();
+            this.startHostTop = rect.top;
+        };
+
+        this.els.trigger.addEventListener('mousedown', (e) => {
+            if (this.slideEnabled) e.preventDefault(); // Prevent text selection
+            startTriggerDrag(e.clientX, e.clientY);
+        });
+
+        this.els.trigger.addEventListener('touchstart', (e) => {
+            if (this.slideEnabled) e.preventDefault();
+            startTriggerDrag(e.changedTouches[0].clientX, e.changedTouches[0].clientY);
+        }, { passive: false });
         this.els.itemsSlot.addEventListener('slotchange', () => this.updateItems());
         this.els.contentClose.addEventListener('click', () => this.hideContent());
 
@@ -474,7 +626,8 @@ class LawnCzarDial extends HTMLElement {
         };
 
         const move = (e) => {
-            if (!this.isOpen || !this.isDragging) return;
+            if (!this.isDragging) return;
+            if (!this.isOpen && !this.isSliding) return;
             e.preventDefault();
 
             let x = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
@@ -493,15 +646,21 @@ class LawnCzarDial extends HTMLElement {
 
             // Vertical Sliding Logic
             if (this.isSliding) {
-                let newTop = y;
+                let dy = y - this.startPos.y;
+                let newTop = this.startHostTop + dy;
+
                 // Constraints
-                const minTop = this.radius + 20; // Padding
-                const maxTop = window.innerHeight - (this.radius + 20);
+                const minTop = 0;
+                const maxTop = window.innerHeight - 80; // 80 is approx host height
 
                 if (newTop < minTop) newTop = minTop;
                 if (newTop > maxTop) newTop = maxTop;
 
                 this.style.top = `${newTop}px`;
+
+                // Sync Container Center (Host Top + Radius)
+                this.els.container.style.top = `${newTop + 40}px`;
+
                 return; // Stop other interactions
             }
 
@@ -571,6 +730,7 @@ class LawnCzarDial extends HTMLElement {
                     // Check for inline content types
                     if (this.clickedIcon.hasAttribute('data-audio') ||
                         this.clickedIcon.hasAttribute('data-video') ||
+                        this.clickedIcon.hasAttribute('data-image') ||
                         this.clickedIcon.hasAttribute('data-email') ||
                         this.clickedIcon.hasAttribute('data-phone') ||
                         this.clickedIcon.hasAttribute('data-map') ||
@@ -627,29 +787,34 @@ class LawnCzarDial extends HTMLElement {
         }
     }
 
+
     showContent(item) {
         const label = item.getAttribute('label') || 'Content';
         this.els.contentTitle.textContent = label;
         this.els.contentBody.innerHTML = '';
 
-        // Audio
+        // Reset Style
+        this.shadowRoot.getElementById('content-container').classList.remove('fullscreen-mode');
+
+        // Audio with Canvas Visualizer
         if (item.hasAttribute('data-audio')) {
+            this.shadowRoot.getElementById('content-container').classList.add('fullscreen-mode');
             const audioSrc = item.getAttribute('data-audio');
-            const audio = document.createElement('audio');
-            audio.controls = true;
-            audio.autoplay = item.hasAttribute('data-autoplay');
-            audio.src = audioSrc;
-            this.els.contentBody.appendChild(audio);
+            this.createAudioVisualizer(audioSrc, item.hasAttribute('data-autoplay'));
         }
 
-        // Video
+        // Video with Canvas Player
         else if (item.hasAttribute('data-video')) {
+            this.shadowRoot.getElementById('content-container').classList.add('fullscreen-mode');
             const videoSrc = item.getAttribute('data-video');
-            const video = document.createElement('video');
-            video.controls = true;
-            video.autoplay = item.hasAttribute('data-autoplay');
-            video.src = videoSrc;
-            this.els.contentBody.appendChild(video);
+            this.createVideoPlayer(videoSrc, item.hasAttribute('data-autoplay'));
+        }
+
+        // Image Viewer
+        else if (item.hasAttribute('data-image')) {
+            this.shadowRoot.getElementById('content-container').classList.add('fullscreen-mode');
+            const imgSrc = item.getAttribute('data-image');
+            this.createImageViewer(imgSrc);
         }
 
         // Email Form
@@ -722,13 +887,313 @@ class LawnCzarDial extends HTMLElement {
 
     hideContent() {
         this.els.contentOverlay.classList.remove('active');
+        // Stop current animation loop if any
+        if (this._mediaRaf) {
+            cancelAnimationFrame(this._mediaRaf);
+            this._mediaRaf = null;
+        }
+
         // Clean up media
         const media = this.els.contentBody.querySelectorAll('audio, video');
         media.forEach(m => {
             m.pause();
             m.src = '';
+            m.remove();
         });
+
+        if (this.audioCtx) {
+            this.audioCtx.close();
+            this.audioCtx = null;
+        }
+
         this.els.contentBody.innerHTML = '';
+        this.shadowRoot.getElementById('content-container').classList.remove('fullscreen-mode');
+    }
+
+    createMediaControls(mediaElement, container) {
+        const controls = document.createElement('div');
+        controls.className = 'media-controls';
+
+        const playBtn = document.createElement('button');
+        playBtn.className = 'media-btn';
+        playBtn.innerHTML = '▶'; // Play icon
+
+        const progressContainer = document.createElement('div');
+        progressContainer.className = 'media-progress-container';
+
+        const progressBar = document.createElement('div');
+        progressBar.className = 'media-progress-bar';
+        progressContainer.appendChild(progressBar);
+
+        const timeDisplay = document.createElement('div');
+        timeDisplay.className = 'media-time';
+        timeDisplay.textContent = '0:00 / 0:00';
+
+        controls.appendChild(playBtn);
+        controls.appendChild(progressContainer);
+        controls.appendChild(timeDisplay);
+
+        container.appendChild(controls); // Append to parent (contentBody usually)
+
+        // Logic
+        const togglePlay = () => {
+            if (mediaElement.paused) {
+                mediaElement.play();
+                playBtn.innerHTML = '⏸';
+            } else {
+                mediaElement.pause();
+                playBtn.innerHTML = '▶';
+            }
+        };
+
+        playBtn.onclick = togglePlay;
+        mediaElement.addEventListener('click', togglePlay); // Click video/canvas to toggle
+
+        // Progress Update
+        const formatTime = (s) => {
+            if (isNaN(s)) return '0:00';
+            const m = Math.floor(s / 60);
+            const sec = Math.floor(s % 60).toString().padStart(2, '0');
+            return `${m}:${sec}`;
+        };
+
+        mediaElement.addEventListener('timeupdate', () => {
+            const pct = (mediaElement.currentTime / mediaElement.duration) * 100;
+            progressBar.style.width = `${pct}%`;
+            timeDisplay.textContent = `${formatTime(mediaElement.currentTime)} / ${formatTime(mediaElement.duration)}`;
+        });
+
+        mediaElement.addEventListener('ended', () => {
+            playBtn.innerHTML = '▶';
+        });
+
+        // Seek
+        progressContainer.addEventListener('click', (e) => {
+            const rect = progressContainer.getBoundingClientRect();
+            const clickX = e.clientX - rect.left;
+            const pct = clickX / rect.width;
+            mediaElement.currentTime = pct * mediaElement.duration;
+        });
+
+        // Opacity Logic: Fade out controls when idle
+        let idleTimer;
+        container.addEventListener('mousemove', () => {
+            controls.style.opacity = '1';
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => {
+                if (!mediaElement.paused) controls.style.opacity = '0';
+            }, 3000);
+        });
+    }
+
+    createAudioVisualizer(audioSrc, autoplay = false) {
+        // Create full screen canvas
+        const canvas = document.createElement('canvas');
+        canvas.style.position = 'absolute';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+
+        const resize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+        window.addEventListener('resize', resize);
+        resize();
+
+        this.els.contentBody.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+
+        // Audio Element
+        const audio = document.createElement('audio');
+        audio.src = audioSrc;
+        audio.style.display = 'none';
+        audio.crossOrigin = 'anonymous'; // Helper for some servers
+        if (autoplay) audio.autoplay = true;
+        this.els.contentBody.appendChild(audio);
+
+        // Custom Overlay Controls
+        this.createMediaControls(audio, this.els.contentBody);
+
+        // Web Audio Initialization
+        // Must be resumed on user gesture. Since we are in a click handler context, this should work.
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        this.audioCtx = new AudioContext();
+
+        const analyser = this.audioCtx.createAnalyser();
+        analyser.fftSize = 512;
+
+        const source = this.audioCtx.createMediaElementSource(audio);
+        source.connect(analyser);
+        analyser.connect(this.audioCtx.destination);
+
+        const bufferLength = analyser.frequencyBinCount;
+        const dataArray = new Uint8Array(bufferLength);
+
+        const draw = () => {
+            if (!this.els.contentOverlay.classList.contains('active')) return;
+            this._mediaRaf = requestAnimationFrame(draw);
+
+            analyser.getByteFrequencyData(dataArray);
+
+            // Draw Background
+            ctx.fillStyle = '#111';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            // Circular Visualizer
+            const cx = canvas.width / 2;
+            const cy = canvas.height / 2;
+            const radius = Math.min(cx, cy) * 0.4;
+
+            ctx.beginPath();
+            ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+            ctx.strokeStyle = 'rgba(0, 255, 157, 0.5)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Bars
+            const barWidth = 4;
+            const count = 120; // Number of bars around circle
+            const step = (Math.PI * 2) / count;
+
+            for (let i = 0; i < count; i++) {
+                // Map i to index in frequency data (focus on lower/mids)
+                const dataIndex = Math.floor((i / count) * (bufferLength * 0.7));
+                const value = dataArray[dataIndex];
+                const percent = value / 255;
+                const height = percent * (Math.min(cx, cy) * 0.5);
+
+                const angle = i * step - Math.PI / 2;
+
+                const x1 = cx + Math.cos(angle) * radius;
+                const y1 = cy + Math.sin(angle) * radius;
+                const x2 = cx + Math.cos(angle) * (radius + height);
+                const y2 = cy + Math.sin(angle) * (radius + height);
+
+                ctx.strokeStyle = `hsl(${120 + percent * 60}, 100%, 50%)`; // Green to Cyan
+                ctx.lineWidth = barWidth;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+        };
+
+        // Ensure context is running (browser policy)
+        audio.onplay = () => {
+            if (this.audioCtx.state === 'suspended') {
+                this.audioCtx.resume();
+            }
+            draw();
+        };
+
+        if (autoplay) {
+            // Try to start immediately if trusted
+            // But usually wait for onplay
+        }
+    }
+
+    createVideoPlayer(videoSrc, autoplay = false) {
+        const canvas = document.createElement('canvas');
+        canvas.style.position = 'absolute';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+
+        const resize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+        window.addEventListener('resize', resize);
+        resize();
+
+        this.els.contentBody.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+
+        const video = document.createElement('video');
+        video.src = videoSrc;
+        video.style.display = 'none'; // Draw via canvas only
+        video.crossOrigin = 'anonymous';
+        if (autoplay) video.autoplay = true;
+        this.els.contentBody.appendChild(video);
+
+        this.createMediaControls(video, this.els.contentBody); // Use video element for timing/play control
+
+        const render = () => {
+            if (!this.els.contentOverlay.classList.contains('active')) return;
+            this._mediaRaf = requestAnimationFrame(render);
+
+            if (video.paused || video.ended) return;
+
+            // Draw Logic: Cover or Contain? User asked for Full Screen at any aspect ratio.
+            // Let's do 'Contain' (Letterboxing) so we don't crop content, but fill background black.
+
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const vw = video.videoWidth;
+            const vh = video.videoHeight;
+            const cw = canvas.width;
+            const ch = canvas.height;
+
+            if (vw === 0 || vh === 0) return;
+
+            const result = this.calculateAspectRatioFit(vw, vh, cw, ch);
+
+            ctx.drawImage(video, result.offsetX, result.offsetY, result.width, result.height);
+        };
+
+        video.addEventListener('play', () => {
+            render();
+        });
+
+        // If autoplay works immediately
+        if (autoplay) {
+            render();
+        }
+    }
+
+    createImageViewer(imgSrc) {
+        const canvas = document.createElement('canvas');
+        canvas.style.position = 'absolute';
+        canvas.style.top = '0';
+        canvas.style.left = '0';
+        canvas.style.width = '100%';
+        canvas.style.height = '100%';
+
+        const resize = () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        };
+        window.addEventListener('resize', resize);
+        resize();
+
+        this.els.contentBody.appendChild(canvas);
+        const ctx = canvas.getContext('2d');
+
+        const img = new Image();
+        img.src = imgSrc;
+        img.onload = () => {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const result = this.calculateAspectRatioFit(img.naturalWidth, img.naturalHeight, canvas.width, canvas.height);
+            ctx.drawImage(img, result.offsetX, result.offsetY, result.width, result.height);
+        };
+    }
+
+    calculateAspectRatioFit(srcWidth, srcHeight, maxWidth, maxHeight) {
+        const ratio = Math.min(maxWidth / srcWidth, maxHeight / srcHeight);
+        const width = srcWidth * ratio;
+        const height = srcHeight * ratio;
+        return {
+            width,
+            height,
+            offsetX: (maxWidth - width) / 2,
+            offsetY: (maxHeight - height) / 2
+        };
     }
 
     checkSnapFeedback() {
