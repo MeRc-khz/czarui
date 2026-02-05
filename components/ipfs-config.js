@@ -12,13 +12,13 @@ export const IPFS_CONFIG = {
     // Media CIDs
     MEDIA: {
         // defined for: feb7_2006_N_trafx_Show.mp3
-        AUDIO_SHOW: 'INSERT_AUDIO_CID_HERE',
+        AUDIO_SHOW: 'QmXrCgHdswjB287EMansUWBMFwukDc3rshmKmwr8crzKpj',
 
         // defined for: paperchasers2.mp4
-        VIDEO_PAPERCHASERS: 'INSERT_VIDEO_CID_HERE',
+        VIDEO_PAPERCHASERS: 'Qmd4WG6pjUuPXV3xByEaVLjGzcGkWf529ux5ED6ySXxESz',
 
         // defined for: qrillienlogo.png
-        LOGO: 'INSERT_LOGO_CID_HERE'
+        LOGO: 'QmUNLLsPACCz1vLxQVkXqqLX5R1X345qqfHbsf67hvA3Nn'
     }
 };
 

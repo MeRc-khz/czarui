@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Purchase Successful - bzr-dial-ui</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="landing/styles.css">
+    <style>
+        .success-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 40px 20px;
+        }
+
+        .success-card {
+            background: var(--bg-card);
+            border: 2px solid var(--primary);
+            border-radius: 24px;
+            padding: 60px 40px;
+            max-width: 600px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .success-icon {
+            font-size: 80px;
+            margin-bottom: 24px;
+            animation: bounce 1s ease;
+        }
+
+        @keyframes bounce {
+
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+
+            50% {
+                transform: translateY(-20px);
+            }
+        }
+
+        .success-title {
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 16px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .success-message {
+            font-size: 18px;
+            color: var(--text-muted);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .info-box {
+            background: rgba(0, 255, 157, 0.1);
+            border: 1px solid var(--primary);
+            border-radius: 12px;
+            padding: 24px;
+            margin: 24px 0;
+            text-align: left;
+        }
+
+        .info-box h3 {
+            color: var(--primary);
+            margin-bottom: 12px;
+        }
+
+        .info-box ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .info-box li {
+            padding: 8px 0;
+            color: var(--text);
+        }
+
+        .info-box li::before {
+            content: "✓ ";
+            color: var(--primary);
+            font-weight: bold;
+            margin-right: 8px;
+        }
+
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(0, 255, 157, 0.3);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="success-container">
+        <div class="success-card">
+            <div class="success-icon">🎉</div>
+            <h1 class="success-title">Payment Successful!</h1>
+            <p class="success-message">
+                Thank you for purchasing bzr-dial-ui! Check your email for your license key and download link.
+            </p>
+
+            <div class="info-box">
+                <h3>📧 What's Next?</h3>
+                <ul>
+                    <li>Check your email inbox (and spam folder)</li>
+                    <li>You'll receive your unique license key</li>
+                    <li>Download link is valid for 24 hours</li>
+                    <li>License key never expires</li>
+                    <li>Lifetime updates included</li>
+                </ul>
+            </div>
+
+            <div id="sessionInfo" style="margin: 24px 0;">
+                <div class="loading"></div>
+                <p style="color: var(--text-muted); margin-top: 12px;">Loading order details...</p>
+            </div>
+
+            <a href="/landing/index.html" class="btn btn-primary">Back to Home</a>
+        </div>
+    </div>
+
+    <script>
+        // Get session ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const sessionId = urlParams.get('session_id');
+
+        if (sessionId) {
+            // Fetch session details
+            fetch(`http://localhost:3000/api/session/${sessionId}`)
+                .then(res => res.json())
+                .then(data => {
+                    const infoDiv = document.getElementById('sessionInfo');
+                    infoDiv.innerHTML = `
+                        <div class="info-box">
+                            <h3>Order Confirmation</h3>
+                            <p><strong>Email:</strong> ${data.customerEmail}</p>
+                            <p><strong>Status:</strong> ${data.status === 'paid' ? '✅ Paid' : data.status}</p>
+                            <p><strong>License Type:</strong> ${data.metadata.license_type}</p>
+                        </div>
+                        <p style="color: var(--text-muted); font-size: 14px;">
+                            Your license key and download link have been sent to <strong>${data.customerEmail}</strong>
+                        </p>
+                    `;
+                })
+                .catch(err => {
+                    console.error('Error fetching session:', err);
+                    document.getElementById('sessionInfo').innerHTML = `
+                        <p style="color: var(--text-muted);">
+                            Your order is being processed. You'll receive an email shortly.
+                        </p>
+                    `;
+                });
+        } else {
+            document.getElementById('sessionInfo').innerHTML = '';
+        }
+    </script>
+</body>
+
+</html>

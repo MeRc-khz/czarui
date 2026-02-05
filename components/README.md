@@ -120,7 +120,7 @@ Display rich media and interactive content inline instead of navigating away!
 | `data-video` | URL | Video file to play inline |
 | `data-email` | Email | Show email form for this address |
 | `data-phone` | Phone | Show phone dialer for this number |
-| `data-map` | Address | Show Google Maps for this location |
+| `data-map` | Address | Show OpenStreetMap for this location |
 | `data-iframe` | URL | Embed any website in iframe |
 | `data-autoplay` | Flag | Auto-play audio/video (optional) |
 
@@ -165,7 +165,7 @@ Display rich media and interactive content inline instead of navigating away!
 </lz-item>
 ```
 
-**Google Maps:**
+**OpenStreetMap:**
 ```html
 <lz-item 
     label="Location" 

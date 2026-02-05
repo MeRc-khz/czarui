@@ -36,13 +36,28 @@ class LawnCzarDial extends HTMLElement {
     }
 
     static get observedAttributes() {
-        return ['radius', 'snap', 'sensitivity', 'justify'];
+        return ['radius', 'snap', 'sensitivity'];
     }
 
     connectedCallback() {
         this.render();
         this.setupEvents();
         this.updateItems();
+
+        // Host click listener for easier interaction when docked
+        this.addEventListener('click', (e) => {
+            console.log('Host clicked', e.composedPath());
+
+            // If dragging, ignore
+            if (this.isDragging || this.isSliding) return;
+
+            // If closed, open it if we clicked the host (fallback/primary for docked)
+            // We check if we are NOT open to avoid conflicting with closing logic (which might be usually handled by overlay)
+            if (!this.isOpen) {
+                console.log(' Opening via Host Click');
+                this.toggle();
+            }
+        });
 
         // Initial tick
         this._loop();
@@ -59,6 +74,7 @@ class LawnCzarDial extends HTMLElement {
             this.radius = parseInt(newValue) || 120;
             this.updateLayout();
         }
+
     }
 
     render() {
@@ -67,52 +83,22 @@ class LawnCzarDial extends HTMLElement {
             :host {
                 display: block;
                 position: fixed;
-                top: 50%;
-                left: 50%;
-                transform: translate(-50%, -50%);
-                width: 100px; /* Trigger size */
-                height: 100px;
+                bottom: 30px;
+                right: 30px;
+                width: 80px; 
+                height: 80px;
                 z-index: 9999;
                 font-family: sans-serif;
                 --primary: #00ff9d;
                 --bg: #111;
                 --text: #fff;
-                transition: all 0s; /* Instant snap for layout changes */
             }
 
             :host([open]) {
-                top: 0; left: 0;
-                transform: none !important; /* Override edge shifts when open to fullscreen */
                 width: 100%;
                 height: 100%;
-                right: auto;
-            }
-
-            /* Edge Justification */
-            :host([justify="right"]) {
-                left: auto;
+                bottom: 0;
                 right: 0;
-                transform: translate(50%, -50%);
-            }
-            :host([justify="left"]) {
-                left: 0;
-                right: auto;
-                transform: translate(-50%, -50%);
-            }
-            
-            /* When open and justified, keep the trigger at the edge */
-            :host([open][justify="right"]) #trigger,
-            :host([open][justify="right"]) #dial-container {
-                left: auto;
-                right: 0;
-                transform: translate(50%, -50%) scale(1);
-            }
-            
-            :host([open][justify="left"]) #trigger,
-            :host([open][justify="left"]) #dial-container {
-                left: 0;
-                right: auto;
-                transform: translate(-50%, -50%) scale(1);
             }
 
             /* The fullscreen overlay for capturing input and showing the rail */
@@ -181,6 +167,10 @@ class LawnCzarDial extends HTMLElement {
                 transition: opacity 0.3s, transform 0.3s;
                 transform: translate(-50%, -50%) scale(0.8);
                 pointer-events: none;
+                /* Center the items wrapper */
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
 
             :host([open]) #dial-container {
@@ -490,11 +480,9 @@ class LawnCzarDial extends HTMLElement {
 
         <div id="overlay">
             <div id="dial-container">
-                <canvas width="600" height="600"></canvas>
                 <div id="items">
                     <slot></slot>
                 </div>
-            </div>
             <div id="active-label"></div>
         </div>
         
@@ -527,25 +515,20 @@ class LawnCzarDial extends HTMLElement {
     }
 
     setupEvents() {
-        // Trigger Click/Double-Click Logic
-        this.els.trigger.addEventListener('click', (e) => {
-            if (this.clickTimer) {
-                clearTimeout(this.clickTimer);
-                this.clickTimer = null;
-                // Double Click: Toggle Slide Mode
-                this.slideEnabled = !this.slideEnabled;
-                if (this.slideEnabled) {
-                    this.setAttribute('slide-enabled', '');
-                    if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
-                } else {
-                    this.removeAttribute('slide-enabled');
-                    if (navigator.vibrate) navigator.vibrate(50);
-                }
+        // Trigger Click handled by Host listener now for robust open
+        // We keep this for double-click logic if needed, but for now let's simplify to avoid race conditions.
+        /* this.els.trigger.addEventListener('click', ... removed duplicate toggle ... */
+
+        // Double click logic should probably be on Host too if needed, but let's stick to simple open first.
+        this.els.trigger.addEventListener('dblclick', (e) => {
+            e.stopPropagation();
+            this.slideEnabled = !this.slideEnabled;
+            if (this.slideEnabled) {
+                this.setAttribute('slide-enabled', '');
+                if (navigator.vibrate) navigator.vibrate([50, 50, 50]);
             } else {
-                this.clickTimer = setTimeout(() => {
-                    this.clickTimer = null;
-                    this.toggle();
-                }, 250);
+                this.removeAttribute('slide-enabled');
+                if (navigator.vibrate) navigator.vibrate(50);
             }
         });
 
@@ -586,7 +569,7 @@ class LawnCzarDial extends HTMLElement {
 
             // Check for Icon Hit
             const path = e.composedPath();
-            const hitIcon = path.find(el => el.tagName === 'LZ-ITEM');
+            const hitIcon = path.find(el => el.tagName === 'BZR-ITEM');
             this.iconDragState = hitIcon ? { active: true, startY: y, locked: false } : null;
             this.clickedIcon = hitIcon;
             this.hasMoved = false;
@@ -767,6 +750,25 @@ class LawnCzarDial extends HTMLElement {
         this.updateLayout();
     }
 
+    updatePosition() {
+        const top = this.getAttribute('top');
+        const bottom = this.getAttribute('bottom');
+
+        // Reset overrides first to allow CSS defaults to work
+        this.style.top = '';
+        this.style.bottom = '';
+
+        if (top) {
+            this.style.top = top;
+            this.style.bottom = 'auto';
+        }
+
+        if (bottom) {
+            this.style.bottom = bottom;
+            this.style.top = 'auto';
+        }
+    }
+
     updateLayout() {
         this.items.forEach((item, index) => {
             // Distribute evenly
@@ -864,13 +866,33 @@ class LawnCzarDial extends HTMLElement {
         // Map
         else if (item.hasAttribute('data-map')) {
             const address = item.getAttribute('data-map');
-            const iframe = document.createElement('iframe');
-            iframe.src = `https://www.google.com/maps?q=${encodeURIComponent(address)}&output=embed`;
-            iframe.style.width = '100%';
-            iframe.style.height = '500px';
-            iframe.style.border = 'none';
-            iframe.style.borderRadius = '8px';
-            this.els.contentBody.appendChild(iframe);
+
+            // Create map container
+            const mapContainer = document.createElement('div');
+            mapContainer.id = 'osm-map-' + Date.now();
+            mapContainer.style.width = '100%';
+            mapContainer.style.height = '500px';
+            mapContainer.style.borderRadius = '8px';
+            mapContainer.style.overflow = 'hidden';
+            this.els.contentBody.appendChild(mapContainer);
+
+            // Load Leaflet CSS and JS if not already loaded
+            if (!document.getElementById('leaflet-css')) {
+                const link = document.createElement('link');
+                link.id = 'leaflet-css';
+                link.rel = 'stylesheet';
+                link.href = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+                document.head.appendChild(link);
+            }
+
+            if (!window.L) {
+                const script = document.createElement('script');
+                script.src = 'https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+                script.onload = () => this.initializeMap(mapContainer, address);
+                document.head.appendChild(script);
+            } else {
+                this.initializeMap(mapContainer, address);
+            }
         }
 
         // Generic iframe
@@ -908,6 +930,40 @@ class LawnCzarDial extends HTMLElement {
 
         this.els.contentBody.innerHTML = '';
         this.shadowRoot.getElementById('content-container').classList.remove('fullscreen-mode');
+    }
+
+    initializeMap(container, address) {
+        // Geocode the address using Nominatim (OpenStreetMap's geocoding service)
+        const geocodeUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address)}`;
+
+        fetch(geocodeUrl)
+            .then(response => response.json())
+            .then(data => {
+                if (data && data.length > 0) {
+                    const lat = parseFloat(data[0].lat);
+                    const lon = parseFloat(data[0].lon);
+
+                    // Initialize the map
+                    const map = window.L.map(container).setView([lat, lon], 15);
+
+                    // Add OpenStreetMap tiles
+                    window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+                        maxZoom: 19
+                    }).addTo(map);
+
+                    // Add a marker at the location
+                    window.L.marker([lat, lon]).addTo(map)
+                        .bindPopup(data[0].display_name)
+                        .openPopup();
+                } else {
+                    container.innerHTML = '<p style="padding: 20px; text-align: center;">Location not found</p>';
+                }
+            })
+            .catch(error => {
+                console.error('Geocoding error:', error);
+                container.innerHTML = '<p style="padding: 20px; text-align: center;">Error loading map</p>';
+            });
     }
 
     createMediaControls(mediaElement, container) {
@@ -1436,7 +1492,7 @@ class LawnCzarDial extends HTMLElement {
     }
 }
 
-customElements.define('lz-dial', LawnCzarDial);
+
 
 // Helper Item Component
 class LawnCzarItem extends HTMLElement {
@@ -1543,4 +1599,5 @@ class LawnCzarItem extends HTMLElement {
         `;
     }
 }
+customElements.define('lz-dial', LawnCzarDial);
 customElements.define('lz-item', LawnCzarItem);

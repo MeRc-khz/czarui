@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>bzr-dial-ui - Premium Radial Menu Web Component</title>
+    <meta name="description"
+        content="A stunning, physics-based radial dial menu web component with haptic feedback, media support, and zero dependencies. Perfect for modern web applications.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="container">
+            <div class="hero-content">
+                <div class="badge">Web Component</div>
+                <h1 class="hero-title">
+                    <span class="gradient-text">bzr-dial-ui</span>
+                    <br>The Future of Radial Menus
+                </h1>
+                <p class="hero-subtitle">
+                    A premium, physics-based radial dial component with stunning animations,
+                    haptic feedback, and media support. Zero dependencies. Pure vanilla JavaScript.
+                </p>
+                <div class="hero-cta">
+                    <button class="btn btn-primary" id="buyNowBtn">
+                        <span>Get bzr-dial-ui</span>
+                        <span class="price">$49</span>
+                    </button>
+                    <a href="#demo" class="btn btn-secondary">Try Live Demo</a>
+                </div>
+                <div class="hero-features">
+                    <div class="feature-pill">✨ Zero Dependencies</div>
+                    <div class="feature-pill">🎨 Fully Customizable</div>
+                    <div class="feature-pill">📱 Touch & Mouse</div>
+                    <div class="feature-pill">🚀 60 FPS</div>
+                </div>
+            </div>
+
+            <!-- Live Demo Preview -->
+            <div class="hero-demo">
+                <div class="demo-container" id="demoContainer">
+                    <!-- Component will be loaded here -->
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features" id="features">
+        <div class="container">
+            <h2 class="section-title">Packed with Premium Features</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Physics-Based Interaction</h3>
+                    <p>Smooth inertial scrolling with intelligent snapping. Feels natural and responsive on any device.
+                    </p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📹</div>
+                    <h3>Rich Media Support</h3>
+                    <p>Built-in support for audio visualization, video playback, images, maps, and custom iframes.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🎨</div>
+                    <h3>Fully Customizable</h3>
+                    <p>CSS variables for colors, sizes, and animations. Adapts to your brand instantly.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">📱</div>
+                    <h3>Touch Optimized</h3>
+                    <p>Haptic feedback, gesture support, and mobile-first design. Perfect for progressive web apps.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">⚡</div>
+                    <h3>Lightning Fast</h3>
+                    <p>Hybrid Canvas/DOM rendering ensures 60 FPS performance even with complex animations.</p>
+                </div>
+
+                <div class="feature-card">
+                    <div class="feature-icon">🔒</div>
+                    <h3>Shadow DOM</h3>
+                    <p>Fully encapsulated with Shadow DOM. No style conflicts, no global pollution.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Code Example Section -->
+    <section class="code-section">
+        <div class="container">
+            <h2 class="section-title">Simple to Use</h2>
+            <p class="section-subtitle">Just drop it in. No build tools required.</p>
+
+            <div class="code-example">
+                <div class="code-header">
+                    <span class="code-lang">HTML</span>
+                    <button class="copy-btn" data-copy="code1">Copy</button>
+                </div>
+                <pre id="code1"><code>&lt;!-- Include the component --&gt;
+&lt;script src="bzr-dial.js"&gt;&lt;/script&gt;
+
+&lt;!-- Use it anywhere --&gt;
+&lt;bzr-dial radius="150"&gt;
+  &lt;bzr-item label="Home" icon="🏠" href="/"&gt;&lt;/bzr-item&gt;
+  &lt;bzr-item label="Music" icon="🎵" data-audio="song.mp3"&gt;&lt;/bzr-item&gt;
+  &lt;bzr-item label="Video" icon="🎬" data-video="demo.mp4"&gt;&lt;/bzr-item&gt;
+  &lt;bzr-item label="Gallery" icon="🖼️" data-image="photo.jpg"&gt;&lt;/bzr-item&gt;
+&lt;/bzr-dial&gt;</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section class="demo-section" id="demo">
+        <div class="container">
+            <h2 class="section-title">Interactive Demo</h2>
+            <p class="section-subtitle">Click the dial to explore all features</p>
+
+            <div class="demo-wrapper">
+                <!-- Full demo will be embedded here -->
+                <div id="fullDemo"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section class="pricing" id="pricing">
+        <div class="container">
+            <h2 class="section-title">Simple, Transparent Pricing</h2>
+
+            <div class="pricing-cards">
+                <!-- Single License -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Single License</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">49</span>
+                        </div>
+                        <p class="price-desc">One-time payment</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✅ Full source code</li>
+                        <li>✅ Use in 1 project</li>
+                        <li>✅ Lifetime updates</li>
+                        <li>✅ Email support</li>
+                        <li>✅ Commercial use</li>
+                    </ul>
+                    <button class="btn btn-primary" data-plan="single">Get Started</button>
+                </div>
+
+                <!-- Team License -->
+                <div class="pricing-card featured">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Team License</h3>
+                        <div class="price">
+                            <span class="currency">$</span>
+                            <span class="amount">149</span>
+                        </div>
+                        <p class="price-desc">One-time payment</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✅ Full source code</li>
+                        <li>✅ Use in unlimited projects</li>
+                        <li>✅ Lifetime updates</li>
+                        <li>✅ Priority support</li>
+                        <li>✅ Commercial use</li>
+                        <li>✅ Team of up to 10 developers</li>
+                    </ul>
+                    <button class="btn btn-primary" data-plan="team">Get Started</button>
+                </div>
+
+                <!-- Enterprise -->
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Enterprise</h3>
+                        <div class="price">
+                            <span class="amount">Custom</span>
+                        </div>
+                        <p class="price-desc">Contact for pricing</p>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✅ Everything in Team</li>
+                        <li>✅ Custom features</li>
+                        <li>✅ Dedicated support</li>
+                        <li>✅ SLA guarantee</li>
+                        <li>✅ White-label option</li>
+                        <li>✅ Unlimited developers</li>
+                    </ul>
+                    <button class="btn btn-secondary" data-plan="enterprise">Contact Sales</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section class="faq">
+        <div class="container">
+            <h2 class="section-title">Frequently Asked Questions</h2>
+
+            <div class="faq-grid">
+                <div class="faq-item">
+                    <h3>What do I get when I purchase?</h3>
+                    <p>You'll receive the full, unminified source code, documentation, examples, and lifetime access to
+                        updates.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>Can I use this in commercial projects?</h3>
+                    <p>Absolutely! All licenses include commercial use rights.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>Do you offer refunds?</h3>
+                    <p>Yes! 30-day money-back guarantee, no questions asked.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>What browsers are supported?</h3>
+                    <p>All modern browsers: Chrome, Firefox, Safari, Edge. IE11 is not supported.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>Do I need a framework?</h3>
+                    <p>No! bzr-dial-ui is a native web component that works with vanilla JS, React, Vue, Angular, or any
+                        framework.</p>
+                </div>
+
+                <div class="faq-item">
+                    <h3>How do updates work?</h3>
+                    <p>You'll get email notifications when updates are released, with instant download access.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to elevate your UI?</h2>
+            <p>Join hundreds of developers building stunning interfaces with bzr-dial-ui</p>
+            <button class="btn btn-primary btn-large" id="ctaBuyBtn">
+                Get bzr-dial-ui Now - $49
+            </button>
+            <p class="cta-guarantee">30-day money-back guarantee • Instant delivery</p>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-brand">
+                    <h3>bzr-dial-ui</h3>
+                    <p>Premium radial menu component</p>
+                </div>
+                <div class="footer-links">
+                    <a href="#features">Features</a>
+                    <a href="#demo">Demo</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="mailto:support@bzzrr.link">Support</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 bzzrr.link. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="app.js"></script>
+</body>
+
+</html>
