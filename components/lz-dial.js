@@ -80,6 +80,8 @@ class LawnCzarDial extends HTMLElement {
     render() {
         this.shadowRoot.innerHTML = `
         <style>
+            @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap');
+            
             :host {
                 display: block;
                 position: fixed;
@@ -88,8 +90,8 @@ class LawnCzarDial extends HTMLElement {
                 width: 80px; 
                 height: 80px;
                 z-index: 9999;
-                font-family: sans-serif;
-                --primary: #00ff9d;
+                font-family: 'Space Grotesk', sans-serif;
+                --primary: #2bee8c;
                 --bg: #111;
                 --text: #fff;
             }
@@ -135,7 +137,7 @@ class LawnCzarDial extends HTMLElement {
                 justify-content: center;
                 align-items: center;
                 cursor: pointer;
-                box-shadow: 0 4px 20px rgba(0,255,157,0.4);
+                box-shadow: 0 4px 20px rgba(43,238,140,0.3);
                 transition: transform 0.2s, background 0.2s;
                 z-index: 2;
                 font-weight: bold;
@@ -143,9 +145,9 @@ class LawnCzarDial extends HTMLElement {
             }
             
             @keyframes pulse {
-                0% { box-shadow: 0 0 0 0 rgba(0, 255, 157, 0.4); }
-                70% { box-shadow: 0 0 0 20px rgba(0, 255, 157, 0); }
-                100% { box-shadow: 0 0 0 0 rgba(0, 255, 157, 0); }
+                0% { box-shadow: 0 0 0 0 rgba(43, 238, 140, 0.3); }
+                70% { box-shadow: 0 0 0 20px rgba(43, 238, 140, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(43, 238, 140, 0); }
             }
 
             #trigger:hover {
@@ -262,13 +264,13 @@ class LawnCzarDial extends HTMLElement {
             #content-container {
                 background: var(--bg);
                 border: 2px solid var(--primary);
-                border-radius: 12px;
+                border-radius: 8px;
                 padding: 30px;
                 max-width: 90%;
                 max-height: 90%;
                 overflow: auto;
                 position: relative;
-                box-shadow: 0 10px 50px rgba(0, 255, 157, 0.3);
+                box-shadow: 0 10px 50px rgba(43, 238, 140, 0.3);
             }
 
             #content-close {
@@ -335,7 +337,7 @@ class LawnCzarDial extends HTMLElement {
             #content-body textarea:focus {
                 outline: none;
                 border-color: var(--primary);
-                box-shadow: 0 0 10px rgba(0, 255, 157, 0.3);
+                box-shadow: 0 0 10px rgba(43, 238, 140, 0.3);
             }
 
             #content-body button[type="submit"] {
@@ -423,11 +425,11 @@ class LawnCzarDial extends HTMLElement {
                 background: rgba(0, 0, 0, 0.6);
                 backdrop-filter: blur(10px);
                 padding: 15px 25px;
-                border-radius: 30px;
+                border-radius: 8px;
                 display: flex;
                 align-items: center;
                 gap: 15px;
-                border: 1px solid rgba(0, 255, 157, 0.3);
+                border: 1px solid rgba(43, 238, 140, 0.3);
                 z-index: 15;
                 transition: opacity 0.3s;
             }

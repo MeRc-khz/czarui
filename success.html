@@ -1,35 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Purchase Successful - bzr-dial-ui</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="landing/styles.css">
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Mission Success - Bzzrrr.link Webwork</title>
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap"
+        rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols_Outlined:wght,FILL@100..700,0..1&display=swap"
+        rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2bee8c",
+                        "primary-dark": "#1fa863",
+                        "secondary": "#4A7040",
+                        "background-light": "#f5f5f5",
+                        "background-dark": "#0a0a0a",
+                        "surface-dark": "#1c2721",
+                        "surface-border": "#283930",
+                        "border-tactical": "#d1d5db",
+                        "text-main": "#141513",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "display-light": ["Public Sans", "sans-serif"],
+                        "mono": ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "Liberation Mono", "Courier New", "monospace"],
+                    },
+                    backgroundImage: {
+                        'grid-pattern-dark': "linear-gradient(to right, #283930 1px, transparent 1px), linear-gradient(to bottom, #283930 1px, transparent 1px)",
+                        'grid-pattern-light': "linear-gradient(to right, #e5e7eb 1px, transparent 1px), linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)",
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
     <style>
-        .success-container {
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 40px 20px;
+        body {
+            font-family: "Space Grotesk", sans-serif;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .success-card {
-            background: var(--bg-card);
-            border: 2px solid var(--primary);
-            border-radius: 24px;
-            padding: 60px 40px;
-            max-width: 600px;
-            text-align: center;
-            box-shadow: var(--shadow-lg);
+        .light body {
+            font-family: "Public Sans", sans-serif;
         }
 
-        .success-icon {
-            font-size: 80px;
-            margin-bottom: 24px;
-            animation: bounce 1s ease;
+        .grid-bg {
+            background-size: 40px 40px;
+            mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+            -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%);
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: rgba(43, 238, 140, 0.1);
+            animation: scan 8s linear infinite;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        .light .scan-line {
+            display: none;
+        }
+
+        @keyframes scan {
+            0% {
+                top: 0%;
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 1;
+            }
+
+            90% {
+                opacity: 1;
+            }
+
+            100% {
+                top: 100%;
+                opacity: 0;
+            }
         }
 
         @keyframes bounce {
@@ -44,62 +108,8 @@
             }
         }
 
-        .success-title {
-            font-size: 36px;
-            font-weight: 900;
-            margin-bottom: 16px;
-            background: var(--gradient);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .success-message {
-            font-size: 18px;
-            color: var(--text-muted);
-            margin-bottom: 32px;
-            line-height: 1.6;
-        }
-
-        .info-box {
-            background: rgba(0, 255, 157, 0.1);
-            border: 1px solid var(--primary);
-            border-radius: 12px;
-            padding: 24px;
-            margin: 24px 0;
-            text-align: left;
-        }
-
-        .info-box h3 {
-            color: var(--primary);
-            margin-bottom: 12px;
-        }
-
-        .info-box ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .info-box li {
-            padding: 8px 0;
-            color: var(--text);
-        }
-
-        .info-box li::before {
-            content: "✓ ";
-            color: var(--primary);
-            font-weight: bold;
-            margin-right: 8px;
-        }
-
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid rgba(0, 255, 157, 0.3);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .success-icon {
+            animation: bounce 1s ease;
         }
 
         @keyframes spin {
@@ -107,36 +117,171 @@
                 transform: rotate(360deg);
             }
         }
+
+        .loading-spinner {
+            animation: spin 1s linear infinite;
+        }
     </style>
 </head>
 
-<body>
-    <div class="success-container">
-        <div class="success-card">
-            <div class="success-icon">🎉</div>
-            <h1 class="success-title">Payment Successful!</h1>
-            <p class="success-message">
-                Thank you for purchasing bzr-dial-ui! Check your email for your license key and download link.
-            </p>
-
-            <div class="info-box">
-                <h3>📧 What's Next?</h3>
-                <ul>
-                    <li>Check your email inbox (and spam folder)</li>
-                    <li>You'll receive your unique license key</li>
-                    <li>Download link is valid for 24 hours</li>
-                    <li>License key never expires</li>
-                    <li>Lifetime updates included</li>
-                </ul>
+<body
+    class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-x-hidden min-h-screen flex flex-col font-display-light dark:font-display">
+    <div
+        class="fixed inset-0 pointer-events-none z-0 opacity-20 dark:bg-grid-pattern-dark bg-grid-pattern-light grid-bg">
+    </div>
+    <div class="scan-line"></div>
+    <div class="relative flex flex-col w-full z-10">
+        <header
+            class="sticky top-0 z-50 w-full border-b border-surface-border dark:border-surface-border border-border-tactical bg-white/80 dark:bg-background-dark/95 backdrop-blur-sm px-6 py-4">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+                <a href="webwork-index.html" class="flex items-center gap-3 text-primary group cursor-pointer">
+                    <div
+                        class="relative size-8 flex items-center justify-center border border-primary/30 rounded bg-primary/10 transition-colors group-hover:bg-primary/20">
+                        <span class="material-symbols-outlined text-xl">center_focus_strong</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <h2
+                            class="dark:text-white text-text-main text-lg font-bold leading-none tracking-tight uppercase">
+                            Bzzrrr<span class="text-primary">.link</span></h2>
+                        <span class="text-[10px] text-gray-400 tracking-[0.2em] uppercase leading-none mt-1">Webwork
+                            Sys.</span>
+                    </div>
+                </a>
+                <nav class="hidden md:flex items-center gap-10">
+                    <a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary transition-colors tracking-wide uppercase"
+                        href="webwork-index.html">Mission</a>
+                    <a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary transition-colors tracking-wide uppercase"
+                        href="components/examples.html">Arsenal</a>
+                    <a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary transition-colors tracking-wide uppercase"
+                        href="components/inline-content-demo.html">Docs</a>
+                    <a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary transition-colors tracking-wide uppercase"
+                        href="#">Intel</a>
+                </nav>
+                <div class="flex items-center gap-3">
+                    <div class="hidden lg:flex items-center mr-2">
+                        <div class="flex items-center bg-gray-100 dark:bg-surface-dark border border-border-tactical dark:border-surface-border rounded p-0.5"
+                            title="Mission Mode Selector">
+                            <button id="nightVisionBtn"
+                                class="dark:flex hidden items-center gap-1.5 px-3 py-1.5 bg-background-dark border border-primary/40 rounded shadow-[0_0_10px_rgba(43,238,140,0.15)] text-primary cursor-default">
+                                <span class="material-symbols-outlined text-sm">night_sight_auto</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest">Night Vision</span>
+                            </button>
+                            <button id="dayOpsActiveBtn"
+                                class="dark:hidden flex items-center gap-1.5 px-3 py-1.5 bg-white border border-primary/40 rounded shadow-sm text-primary cursor-default">
+                                <span class="material-symbols-outlined text-sm">light_mode</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest">Day Ops</span>
+                            </button>
+                            <button id="toggleDayOps"
+                                class="dark:flex hidden items-center gap-1.5 px-3 py-1.5 text-gray-500 hover:text-gray-300 transition-colors group">
+                                <span
+                                    class="material-symbols-outlined text-sm group-hover:text-yellow-200 transition-colors">light_mode</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest">Day Ops</span>
+                            </button>
+                            <button id="toggleNightVision"
+                                class="dark:hidden flex items-center gap-1.5 px-3 py-1.5 text-gray-500 hover:text-gray-700 transition-colors group">
+                                <span
+                                    class="material-symbols-outlined text-sm group-hover:text-primary transition-colors">dark_mode</span>
+                                <span class="text-[10px] font-bold uppercase tracking-widest">Night Vision</span>
+                            </button>
+                        </div>
+                    </div>
+                    <div
+                        class="hidden sm:flex items-center justify-center h-9 px-3 border border-border-tactical dark:border-surface-border rounded bg-white dark:bg-surface-dark text-xs font-mono text-primary/80">
+                        <span class="w-2 h-2 rounded-full bg-primary mr-2 animate-pulse"></span>
+                        SYS.NOMINAL
+                    </div>
+                    <div
+                        class="flex items-center justify-center h-10 px-3 bg-gray-100 dark:bg-surface-dark border border-border-tactical dark:border-surface-border text-gray-600 dark:text-gray-400 text-xs font-bold rounded font-mono">
+                        v.1.0.4
+                    </div>
+                </div>
             </div>
+        </header>
+        <main class="flex-grow flex flex-col items-center justify-center w-full py-20">
+            <div class="w-full max-w-2xl px-6">
+                <div
+                    class="rounded-lg border-2 border-primary dark:border-primary border-border-tactical bg-white dark:bg-surface-dark p-12 text-center">
+                    <div class="success-icon text-8xl mb-6">🎉</div>
+                    <h1
+                        class="text-4xl md:text-5xl font-black mb-4 text-transparent bg-clip-text bg-gradient-to-r from-primary to-secondary uppercase">
+                        Mission Success!
+                    </h1>
+                    <p class="text-gray-600 dark:text-gray-300 text-lg mb-8">
+                        Thank you for purchasing bzr-dial-ui! Check your email for your license key and download link.
+                    </p>
 
-            <div id="sessionInfo" style="margin: 24px 0;">
-                <div class="loading"></div>
-                <p style="color: var(--text-muted); margin-top: 12px;">Loading order details...</p>
+                    <div
+                        class="rounded-lg border border-border-tactical dark:border-surface-border bg-gray-50 dark:bg-background-dark p-6 text-left mb-8">
+                        <div
+                            class="flex items-center gap-2 text-primary font-mono text-xs tracking-widest uppercase mb-4">
+                            <span class="material-symbols-outlined text-base">mail</span>
+                            What's Next?
+                        </div>
+                        <ul class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                            <li class="flex items-start gap-2">
+                                <span class="text-primary mt-0.5">✓</span>
+                                <span>Check your email inbox (and spam folder)</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-primary mt-0.5">✓</span>
+                                <span>You'll receive your unique license key</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-primary mt-0.5">✓</span>
+                                <span>Download link is valid for 24 hours</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-primary mt-0.5">✓</span>
+                                <span>License key never expires</span>
+                            </li>
+                            <li class="flex items-start gap-2">
+                                <span class="text-primary mt-0.5">✓</span>
+                                <span>Lifetime updates included</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <div id="sessionInfo" class="mb-8">
+                        <div class="flex items-center justify-center gap-3">
+                            <div
+                                class="w-5 h-5 border-3 border-primary/30 border-t-primary rounded-full loading-spinner">
+                            </div>
+                            <p class="text-gray-500 dark:text-gray-500 text-sm">Loading order details...</p>
+                        </div>
+                    </div>
+
+                    <a href="/landing/index.html"
+                        class="inline-flex items-center gap-2 px-6 py-3 bg-primary hover:bg-primary-dark text-white font-bold rounded transition-colors uppercase tracking-wide">
+                        <span class="material-symbols-outlined">home</span>
+                        Back to Home
+                    </a>
+                </div>
             </div>
-
-            <a href="/landing/index.html" class="btn btn-primary">Back to Home</a>
-        </div>
+        </main>
+        <footer
+            class="w-full border-t border-border-tactical dark:border-surface-border bg-white dark:bg-background-dark text-center py-12 px-6 relative z-10">
+            <div class="max-w-7xl mx-auto flex flex-col gap-8">
+                <div class="flex flex-wrap items-center justify-center gap-8 md:gap-12">
+                    <a class="text-gray-500 hover:text-primary transition-colors text-sm uppercase tracking-wider"
+                        href="#">Privacy Protocol</a>
+                    <a class="text-gray-500 hover:text-primary transition-colors text-sm uppercase tracking-wider"
+                        href="#">Terms of Engagement</a>
+                    <a class="text-gray-500 hover:text-primary transition-colors text-sm uppercase tracking-wider flex items-center gap-2"
+                        href="#">
+                        <span class="w-2 h-2 bg-primary rounded-full animate-pulse"></span>
+                        System Status
+                    </a>
+                </div>
+                <div class="flex flex-col gap-2">
+                    <p class="text-gray-600 text-xs font-mono uppercase">
+                        © 2023 Bzzrrr.link Webwork. All systems nominal.
+                    </p>
+                    <p class="text-[10px] text-gray-700 dark:text-gray-700 font-mono">
+                        SECURE CONNECTION ESTABLISHED // ENCRYPTION: AES-256
+                    </p>
+                </div>
+            </div>
+        </footer>
     </div>
 
     <script>
@@ -151,13 +296,18 @@
                 .then(data => {
                     const infoDiv = document.getElementById('sessionInfo');
                     infoDiv.innerHTML = `
-                        <div class="info-box">
-                            <h3>Order Confirmation</h3>
-                            <p><strong>Email:</strong> ${data.customerEmail}</p>
-                            <p><strong>Status:</strong> ${data.status === 'paid' ? '✅ Paid' : data.status}</p>
-                            <p><strong>License Type:</strong> ${data.metadata.license_type}</p>
+                        <div class="rounded-lg border border-border-tactical dark:border-surface-border bg-gray-50 dark:bg-background-dark p-6 text-left">
+                            <div class="flex items-center gap-2 text-primary font-mono text-xs tracking-widest uppercase mb-4">
+                                <span class="material-symbols-outlined text-base">check_circle</span>
+                                Order Confirmation
+                            </div>
+                            <div class="space-y-2 text-sm text-gray-600 dark:text-gray-400">
+                                <p><strong class="text-gray-900 dark:text-white">Email:</strong> ${data.customerEmail}</p>
+                                <p><strong class="text-gray-900 dark:text-white">Status:</strong> ${data.status === 'paid' ? '<span class="text-primary">✅ Paid</span>' : data.status}</p>
+                                <p><strong class="text-gray-900 dark:text-white">License Type:</strong> ${data.metadata.license_type}</p>
+                            </div>
                         </div>
-                        <p style="color: var(--text-muted); font-size: 14px;">
+                        <p class="text-gray-500 dark:text-gray-500 text-sm mt-4">
                             Your license key and download link have been sent to <strong>${data.customerEmail}</strong>
                         </p>
                     `;
@@ -165,7 +315,7 @@
                 .catch(err => {
                     console.error('Error fetching session:', err);
                     document.getElementById('sessionInfo').innerHTML = `
-                        <p style="color: var(--text-muted);">
+                        <p class="text-gray-500 dark:text-gray-500 text-sm">
                             Your order is being processed. You'll receive an email shortly.
                         </p>
                     `;
@@ -174,6 +324,35 @@
             document.getElementById('sessionInfo').innerHTML = '';
         }
     </script>
+
+    <script>
+        // Theme Toggle Functionality
+        const html = document.documentElement;
+        const toggleDayOps = document.getElementById('toggleDayOps');
+        const toggleNightVision = document.getElementById('toggleNightVision');
+
+        const savedTheme = localStorage.getItem('webwork-theme') || 'dark';
+        if (savedTheme === 'light') {
+            html.classList.remove('dark');
+            html.classList.add('light');
+        } else {
+            html.classList.remove('light');
+            html.classList.add('dark');
+        }
+
+        toggleDayOps.addEventListener('click', () => {
+            html.classList.remove('dark');
+            html.classList.add('light');
+            localStorage.setItem('webwork-theme', 'light');
+        });
+
+        toggleNightVision.addEventListener('click', () => {
+            html.classList.remove('light');
+            html.classList.add('dark');
+            localStorage.setItem('webwork-theme', 'dark');
+        });
+    </script>
+
 </body>
 
 </html>
