@@ -21,13 +21,16 @@ mkdir -p "${TEMP_DIR}/docs"
 
 echo "📋 Copying files..."
 
-# Copy main component
-if [ -f "components/lz-dial.js" ]; then
-    cp components/lz-dial.js "${TEMP_DIR}/bzr-dial.js"
-    echo "  ✅ bzr-dial.js"
+# Copy main component (source: bzr-dial-menu/src/bzr-dial-menu.js)
+if [ -f "../bzr-dial-menu/src/bzr-dial-menu.js" ]; then
+    cp ../bzr-dial-menu/src/bzr-dial-menu.js "${TEMP_DIR}/bzr-dial-menu.js"
+    echo "  ✅ bzr-dial-menu.js"
+elif [ -f "components/bzr-dial-menu.js" ]; then
+    cp components/bzr-dial-menu.js "${TEMP_DIR}/bzr-dial-menu.js"
+    echo "  ✅ bzr-dial-menu.js"
 else
-    echo "  ⚠️  lz-dial.js not found, creating placeholder"
-    echo "// bzr-dial.js - Premium Web Component" > "${TEMP_DIR}/bzr-dial.js"
+    echo "  ⚠️  bzr-dial-menu.js not found, creating placeholder"
+    echo "// bzr-dial-menu.js - Premium Web Component" > "${TEMP_DIR}/bzr-dial-menu.js"
 fi
 
 # Copy examples
@@ -51,11 +54,14 @@ Thank you for purchasing bzr-dial-ui! 🎉
 
 2. Use it in your page:
 ```html
-<bzr-dial 
-    size="300"
-    color="#00ff9d"
-    data-title="My Dial">
-</bzr-dial>
+<script type="module" src="bzr-dial-menu.js"></script>
+
+<bzr-dial-menu>
+    <bzr-item label="Home" icon="🏠" href="/"></bzr-item>
+    <bzr-item label="Music" icon="🎵" data-audio="song.mp3"></bzr-item>
+    <bzr-item label="Video" icon="🎬" data-video="demo.mp4"></bzr-item>
+    <bzr-item label="Settings" icon="⚙️" href="/settings"></bzr-item>
+</bzr-dial-menu>
 ```
 
 ## Documentation

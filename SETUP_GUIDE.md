@@ -265,7 +265,7 @@ echo "📦 Creating bzr-dial-ui package..."
 mkdir -p /tmp/${PACKAGE_NAME}
 
 # Copy component files
-cp components/bzr-dial.js /tmp/${PACKAGE_NAME}/
+cp components/bzr-dial-menu.js /tmp/${PACKAGE_NAME}/
 cp -r examples /tmp/${PACKAGE_NAME}/
 cp -r docs /tmp/${PACKAGE_NAME}/
 cp LICENSE.txt /tmp/${PACKAGE_NAME}/

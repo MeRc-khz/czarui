@@ -291,7 +291,7 @@
 
         if (sessionId) {
             // Fetch session details
-            fetch(`http://localhost:3000/api/session/${sessionId}`)
+            fetch(`/api/session/${sessionId}`)
                 .then(res => res.json())
                 .then(data => {
                     const infoDiv = document.getElementById('sessionInfo');

@@ -169,12 +169,12 @@ class EmailService {
         <div class="info-box">
             <h4>💡 Quick Start:</h4>
             <pre style="background: white; padding: 15px; border-radius: 4px; overflow-x: auto;">
-&lt;script src="bzr-dial.js"&gt;&lt;/script&gt;
+&lt;script type="module" src="bzr-dial-menu.js"&gt;&lt;/script&gt;
 
-&lt;bzr-dial license="${key}"&gt;
+&lt;bzr-dial-menu&gt;
   &lt;bzr-item label="Home" icon="🏠"&gt;&lt;/bzr-item&gt;
   &lt;bzr-item label="About" icon="ℹ️"&gt;&lt;/bzr-item&gt;
-&lt;/bzr-dial&gt;
+&lt;/bzr-dial-menu&gt;
             </pre>
         </div>
         

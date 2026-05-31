@@ -6,7 +6,7 @@ Your final deliverable should include:
 
 ```
 bzr-dial-ui/
-├── bzr-dial.js           # Main component (renamed from lz-dial.js)
+├── bzr-dial-menu.js       # Main component
 ├── bzr-item.js           # Item component (if separate)
 ├── README.md             # Documentation
 ├── LICENSE.txt           # License file
@@ -138,8 +138,8 @@ console.log(generateLicense('customer@example.com', 'single'));
 
 ### License Validation in Component (Optional):
 ```javascript
-// Add to bzr-dial.js
-class BzrDial extends HTMLElement {
+// Add to bzr-dial-menu.js
+class BzrDialMenu extends HTMLElement {
     constructor() {
         super();
         this.validateLicense();
@@ -268,7 +268,7 @@ PACKAGE_NAME="bzr-dial-ui-v${VERSION}"
 mkdir -p dist/${PACKAGE_NAME}
 
 # Copy files
-cp components/bzr-dial.js dist/${PACKAGE_NAME}/
+cp components/bzr-dial-menu.js dist/${PACKAGE_NAME}/
 cp -r examples dist/${PACKAGE_NAME}/
 cp -r docs dist/${PACKAGE_NAME}/
 cp LICENSE.txt dist/${PACKAGE_NAME}/
@@ -283,7 +283,7 @@ echo "Package created: dist/${PACKAGE_NAME}.zip"
 
 ## 🚀 Next Steps
 
-1. **Rename component**: `lz-dial.js` → `bzr-dial.js`
+1. **Rename component**: `bzr-dial-menu.js` is the canonical name
 2. **Create documentation**: Getting started guide, API reference
 3. **Choose platform**: Gumroad (easiest) or Stripe (more control)
 4. **Set up payment**: Create products and pricing
