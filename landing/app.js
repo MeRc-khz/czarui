@@ -70,14 +70,14 @@ function loadDemoComponent() {
 
     const demoHTML = `
         <bzr-dial-menu demo>
-            <bzr-item label="Home" icon="🏠"></bzr-item>
-            <bzr-item label="Music" icon="🎵"></bzr-item>
-            <bzr-item label="Video" icon="🎬"></bzr-item>
-            <bzr-item label="Gallery" icon="🖼️"></bzr-item>
-            <bzr-item label="Settings" icon="⚙️"></bzr-item>
-            <bzr-item label="Profile" icon="👤"></bzr-item>
-            <bzr-item label="Messages" icon="💬"></bzr-item>
-            <bzr-item label="Search" icon="🔍"></bzr-item>
+            <bzr-item label="Home" icon="/icons/home.svg"></bzr-item>
+            <bzr-item label="Music" icon="/icons/music.svg" data-audio="/media/makeufamo.us.mp3" data-autoplay></bzr-item>
+            <bzr-item label="Video" icon="/icons/video.svg" data-video="/media/paperchasers2.mp4"></bzr-item>
+            <bzr-item label="Gallery" icon="/icons/gallery.svg" data-image="/media/illienfront.png"></bzr-item>
+            <bzr-item label="Search" icon="/icons/search.svg"></bzr-item>
+            <bzr-item label="Messages" icon="/icons/messages.svg"></bzr-item>
+            <bzr-item label="Profile" icon="/icons/profile.svg" data-image="/media/qrillielogo.png"></bzr-item>
+            <bzr-item label="Settings" icon="/icons/settings.svg"></bzr-item>
         </bzr-dial-menu>
     `;
 
