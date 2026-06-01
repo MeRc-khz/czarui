@@ -9,12 +9,14 @@ const cors = require('cors');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 const LicenseManager = require('./license-manager');
 const EmailService = require('./email-service');
+const AuthService = require('./auth-service');
 const path = require('path');
 const fs = require('fs');
 
 const app = express();
 const licenseManager = new LicenseManager(process.env.LICENSE_SECRET);
 const emailService = new EmailService();
+const authService = new AuthService(process.env.LICENSE_SECRET);
 
 // In-memory license storage (use database in production)
 const licenses = new Map();
@@ -183,6 +185,109 @@ app.get('/api/session/:sessionId', async (req, res) => {
         console.error('Session retrieval error:', error);
         res.status(500).json({ error: error.message });
     }
+});
+
+/**
+ * License authentication — validates license key, returns session cookie
+ */
+app.post('/api/auth', (req, res) => {
+    try {
+        const { licenseKey } = req.body;
+
+        if (!licenseKey) {
+            return res.status(400).json({ error: 'License key required' });
+        }
+
+        // Validate format
+        if (!licenseManager.validateFormat(licenseKey)) {
+            return res.status(401).json({ error: 'Invalid license key' });
+        }
+
+        // Check if license exists
+        const license = licenses.get(licenseKey);
+        if (!license) {
+            return res.status(401).json({ error: 'License not found' });
+        }
+
+        // Generate session
+        const token = authService.generateSession(license);
+        const cookie = authService.sessionCookie(token);
+
+        res.setHeader('Set-Cookie', cookie);
+        res.json({
+            success: true,
+            license: {
+                key: license.key,
+                email: license.email,
+                type: license.type
+            }
+        });
+
+    } catch (error) {
+        console.error('Auth error:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
+
+/**
+ * Session validation — called by dashboard/configurator to verify cookie
+ */
+app.get('/api/auth/validate', (req, res) => {
+    try {
+        const cookieHeader = req.headers.cookie || '';
+        const sessionMatch = cookieHeader.match(/bzar_session=([^;]+)/);
+
+        if (!sessionMatch) {
+            return res.json({ valid: false });
+        }
+
+        const payload = authService.validateSession(sessionMatch[1]);
+        if (!payload) {
+            return res.json({ valid: false });
+        }
+
+        res.json({
+            valid: true,
+            license: {
+                key: payload.key,
+                email: payload.email,
+                type: payload.type
+            }
+        });
+    } catch (error) {
+        res.json({ valid: false });
+    }
+});
+
+/**
+ * Internal auth check for nginx auth_request (returns HTTP 401 for invalid)
+ */
+app.get('/api/auth/check', (req, res) => {
+    try {
+        const cookieHeader = req.headers.cookie || '';
+        const sessionMatch = cookieHeader.match(/bzar_session=([^;]+)/);
+
+        if (!sessionMatch) {
+            return res.status(401).json({ error: 'No session' });
+        }
+
+        const payload = authService.validateSession(sessionMatch[1]);
+        if (!payload) {
+            return res.status(401).json({ error: 'Invalid session' });
+        }
+
+        res.json({ valid: true });
+    } catch (error) {
+        res.status(401).json({ error: 'Auth check failed' });
+    }
+});
+
+/**
+ * Clear session (logout)
+ */
+app.post('/api/auth/logout', (req, res) => {
+    res.setHeader('Set-Cookie', authService.clearSessionCookie());
+    res.json({ success: true });
 });
 
 /**

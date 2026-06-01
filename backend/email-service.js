@@ -146,6 +146,10 @@ class EmailService {
         <div style="text-align: center;">
             <a href="${downloadUrl}" class="button">Download bzr-dial-ui</a>
         </div>
+
+        <div style="text-align: center; margin-top: 15px;">
+            <a href="https://bzr.game4real.us/dashboard/?key=${key}" class="button" style="background: linear-gradient(135deg, #2bee8c 0%, #1fa863 100%);">Access Your Dashboard →</a>
+        </div>
         
         <div class="info-box">
             <h4>📦 What's Included:</h4>
@@ -169,12 +173,12 @@ class EmailService {
         <div class="info-box">
             <h4>💡 Quick Start:</h4>
             <pre style="background: white; padding: 15px; border-radius: 4px; overflow-x: auto;">
-&lt;script type="module" src="bzr-dial-menu.js"&gt;&lt;/script&gt;
+&lt;script src="bzr-dial.js"&gt;&lt;/script&gt;
 
-&lt;bzr-dial-menu&gt;
+&lt;bzr-dial license="${key}"&gt;
   &lt;bzr-item label="Home" icon="🏠"&gt;&lt;/bzr-item&gt;
   &lt;bzr-item label="About" icon="ℹ️"&gt;&lt;/bzr-item&gt;
-&lt;/bzr-dial-menu&gt;
+&lt;/bzr-dial&gt;
             </pre>
         </div>
         
