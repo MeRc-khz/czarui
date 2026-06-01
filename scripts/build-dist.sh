@@ -75,3 +75,10 @@ echo "✅ Build complete!"
 echo "   Obfuscated: $(wc -c < "$OUTPUT_DIR/bzr-dial-menu.js") bytes"
 echo "   Minified:   $(wc -c < "$OUTPUT_DIR/bzr-dial-menu.min.js") bytes"
 echo "   Source:     $(wc -c < "$SRC") bytes"
+
+# Step 5: Build demo version (source with watermark, no auth)
+echo "📦 Building demo version..."
+mkdir -p /var/src/bzr-dial-menu-demo
+cp "$SRC" "/var/src/bzr-dial-menu-demo/bzr-dial-menu.js"
+chown www-data:www-data "/var/src/bzr-dial-menu-demo/bzr-dial-menu.js"
+echo "   Demo:     $(wc -c < "/var/src/bzr-dial-menu-demo/bzr-dial-menu.js") bytes"

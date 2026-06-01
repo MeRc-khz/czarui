@@ -86,7 +86,7 @@ function loadDemoComponent() {
 
     // Load the canonical bzr-dial-menu component
     const script = document.createElement('script');
-    script.src = '/component/bzr-dial-menu.js';
+    script.src = '/demo/bzr-dial-menu.js';
     document.body.appendChild(script);
 }
 
