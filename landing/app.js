@@ -69,7 +69,7 @@ function loadDemoComponent() {
     if (!heroDemo && !fullDemo) return;
 
     const demoHTML = `
-        <bzr-dial-menu>
+        <bzr-dial-menu demo>
             <bzr-item label="Home" icon="🏠"></bzr-item>
             <bzr-item label="Music" icon="🎵"></bzr-item>
             <bzr-item label="Video" icon="🎬"></bzr-item>
