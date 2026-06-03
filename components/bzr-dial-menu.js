@@ -37,7 +37,7 @@ class BzrDialMenu extends HTMLElement {
         this.targetRotation = null;
 
         // Physics
-        this.friction = 0.95;
+        this.friction = 0.985;
         this.spring = 0.1;
 
         // Animation Loop
@@ -60,11 +60,16 @@ class BzrDialMenu extends HTMLElement {
     }
 
     connectedCallback() {
+        // Demo mode defaults to left edge so items fan rightward
+        if (this.hasAttribute('demo') && !this.hasAttribute('justify')) {
+            this.setAttribute('justify', 'left');
+        }
+
         this.render();
         this.setupEvents();
 
         this.updateItems();
-        this.updatePosition(); // Ensure position is set on connect
+        this.updatePosition();
 
         // Host click listener for easier interaction when docked
         this.addEventListener('click', (e) => {
@@ -136,32 +141,63 @@ class BzrDialMenu extends HTMLElement {
             :host {
                 display: block;
                 position: fixed;
-                top: 50%; /* Vertical center by default */
-                right: -40px; /* Center circle on right edge */
-                width: 80px; 
+                top: 50%;
+                right: 0px;
+                width: 80px;
                 height: 80px;
                 z-index: 9999;
                 font-family: 'Space Grotesk', sans-serif;
                 --primary: #2bee8c;
                 --bg: #111;
                 --text: #fff;
-                transform: translateY(-50%); /* Center strictly */
+                transform: translateY(-50%);
+            }
+
+            /* Demo mode: embed inline, centered in the container.
+               Trigger sits at center of the host box, ring radiates outward. */
+            :host([demo]) {
+                position: relative;
+                top: auto;
+                right: auto;
+                left: auto;
+                width: 100%;
+                height: 100%;
+                min-height: 300px;
+                transform: none;
+                pointer-events: auto;
+                overflow: visible;
+            }
+
+            :host([demo]) #trigger {
+                left: 50%;
+                top: 50%;
+                transform: translate(-50%, -50%);
+            }
+
+            @keyframes pulse {
+                0% { box-shadow: 0 0 0 0 rgba(43, 238, 140, 0.3); }
+                70% { box-shadow: 0 0 0 20px rgba(43, 238, 140, 0); }
+                100% { box-shadow: 0 0 0 0 rgba(43, 238, 140, 0); }
+            }
+
+            #trigger:hover {
+                animation: pulse 1.5s infinite;
             }
 
             :host([justify="left"]) {
                 right: auto;
-                left: -40px;
+                left: 0px;
             }
 
+            /* Production: fullscreen overlay when open */
             :host([open]) {
-                /* When open, we still want to be anchored, but overlay covers screen */
                 width: 100%;
                 height: 100%;
                 top: 0;
                 right: 0;
-                left: 0 !important; /* Override justify positioning */
+                left: 0 !important;
                 transform: none;
-                pointer-events: none; /* Let clicks pass to overlay/trigger */
+                pointer-events: none;
             }
 
             /* The fullscreen overlay for capturing input and showing the rail */
@@ -176,6 +212,23 @@ class BzrDialMenu extends HTMLElement {
                 backdrop-filter: blur(5px);
                 -webkit-backdrop-filter: blur(5px);
             }
+
+            :host([demo]) #dial-container {
+                position: absolute;
+                left: 50%;
+                top: 50%;
+            }
+
+            :host([demo][open]) #dial-container {
+                opacity: 1;
+                pointer-events: auto;
+            }
+
+            :host([demo]) #overlay {
+                position: absolute;
+                top: 0; left: 0; right: 0; bottom: 0;
+                border-radius: inherit;
+            }
             
             :host([open]) #overlay {
                 pointer-events: auto;
@@ -185,14 +238,19 @@ class BzrDialMenu extends HTMLElement {
                 opacity: 1;
             }
 
-            /* Trigger Button - Always stays at (0,0) within host */
-            /* If host is fullscreen [open], we need to position trigger manually to match the visual edge anchor */
+            :host([demo][open]) #overlay {
+                position: absolute;
+                border-radius: inherit;
+            }
+
+            /* Trigger = the nucleus. Center sits exactly on the viewport edge.
+               Host right:0 + trigger right:0 puts trigger center 40px inside the
+               right edge. Icons orbit this point via JS in positionItems(). */
             #trigger {
                 position: absolute;
-                top: 0; 
-                left: 0; 
+                top: 0;
+                right: 0;
                 width: 80px; height: 80px;
-                /* Centered in host when closed */
                 margin: 0;
                 border-radius: 50%;
                 background: var(--primary);
@@ -209,21 +267,6 @@ class BzrDialMenu extends HTMLElement {
                 pointer-events: auto;
             }
 
-            :host([open]) #trigger {
-                /* When open, host is fullscreen. Position manually at edge anchor. */
-                top: 50%;
-                left: auto;
-                right: 0;
-                margin-top: -40px;
-                margin-right: -40px; /* Half off-screen */
-            }
-
-            :host([justify="left"][open]) #trigger {
-                right: auto;
-                left: 0;
-                margin-right: 0;
-                margin-left: -40px;
-            }
             @keyframes pulse {
                 0% { box-shadow: 0 0 0 0 rgba(43, 238, 140, 0.3); }
                 70% { box-shadow: 0 0 0 20px rgba(43, 238, 140, 0); }
@@ -240,34 +283,31 @@ class BzrDialMenu extends HTMLElement {
                 box-shadow: 0 0 20px #ff0055;
             }
 
-            /* Container for the rotating dial elements - positioned at FAB location */
-            /* Container for the rotating dial elements */
+            /* Container for the rotating dial elements — atom model.
+               When closed: collapsed at host origin (clipped to 80x80 host).
+               When open: JS positions .dial-fixed at the trigger center in viewport
+               coordinates so the ring radiates from the screen edge. */
             #dial-container {
                 position: absolute;
-                top: 50%; 
-                left: 50%;
+                top: 0;
+                left: 0;
                 width: 0; height: 0;
                 opacity: 0;
-                transform: translate(-50%, -50%) scale(0.8);
-                transition: opacity 0.3s, transform 0.3s;
+                transition: opacity 0.3s;
                 pointer-events: none;
-                display: flex;
-                align-items: center;
-                justify-content: center;
             }
 
             :host([open]) #dial-container {
-                /* When open, position at edge center */
-                left: auto; 
-                right: 0;
-                transform: scale(1);
-                opacity: 1; 
+                opacity: 1;
                 pointer-events: auto;
             }
-            
-            :host([open][justify="left"]) #dial-container {
-                right: auto; 
-                left: 0;
+
+            #dial-container.dial-fixed {
+                position: fixed;
+            }
+
+            :host([justify="left"]) #dial-container.dial-fixed {
+                /* left-justify: mirror the ring direction */
             }
 
             /* Active Label (Bottom Center) */
@@ -287,12 +327,16 @@ class BzrDialMenu extends HTMLElement {
                 opacity: 0;
                 z-index: 1000; /* Ensure on top */
             }
+
+            :host([demo]) #active-label {
+                bottom: 10%;
+            }
             
             :host([open]) #active-label {
                 opacity: 1;
             }
 
-            /* The Canvas Rail */
+            /* The Canvas Rail — centered on the trigger/origin point */
             canvas {
                 position: absolute;
                 top: -300px; left: -300px;
@@ -354,6 +398,12 @@ class BzrDialMenu extends HTMLElement {
                 z-index: 10000;
                 opacity: 0;
                 transition: opacity 0.3s;
+            }
+
+            :host([demo]) #content-overlay {
+                position: absolute;
+                top: 0; left: 0; right: 0; bottom: 0;
+                border-radius: inherit;
             }
 
             #content-overlay.active {
@@ -624,6 +674,14 @@ class BzrDialMenu extends HTMLElement {
         this._clickTimer = null;
         this._resizeHandlers = [];
 
+        // Reposition dial container on viewport resize when open
+        let _resizeTimer = null;
+        window.addEventListener('resize', () => {
+            if (!this.isOpen) return;
+            clearTimeout(_resizeTimer);
+            _resizeTimer = setTimeout(() => this._positionDialContainer(), 100);
+        });
+
         // Trigger click handler - toggles menu and closes content overlay
         this.els.trigger.addEventListener('click', (e) => {
             // If dragging or sliding, ignore
@@ -783,9 +841,9 @@ class BzrDialMenu extends HTMLElement {
                 this.style.transform = 'none';
                 this.style.top = `${newTop}px`;
 
-                // Move the dial container with the FAB
-                if (this.isOpen) {
-                    this.els.container.style.top = `${newTop + 40}px`; // FAB center offset
+                // Reposition the dial container to follow the trigger (production only)
+                if (this.isOpen && !this.hasAttribute('demo')) {
+                    this._positionDialContainer();
                 }
 
                 return; // Stop other interactions
@@ -810,14 +868,6 @@ class BzrDialMenu extends HTMLElement {
 
                     let currentSlot = Math.round(this.rotation / this.snapAngle);
                     let targetSlot = currentSlot + direction;
-
-                    // Clamp to valid item range: slots -(count-1)..0
-                    // At slot 0, item 0 is at the perpendicular.
-                    // At slot -(count-1), the last item is at the perpendicular.
-                    const maxSlot = this.items.length - 1;
-                    if (targetSlot > 0) targetSlot = 0;
-                    if (targetSlot < -maxSlot) targetSlot = -maxSlot;
-
                     this.targetRotation = targetSlot * this.snapAngle;
                     return;
                 }
@@ -837,17 +887,12 @@ class BzrDialMenu extends HTMLElement {
             if (delta > Math.PI) delta -= Math.PI * 2;
             if (delta < -Math.PI) delta += Math.PI * 2;
 
-            // Free-spin uses atan2 relative to FAB center.
-            // For right-side dials, the math naturally produces correct direction.
-            // For left-side dials, positionItems() mirrors with angle = -angle,
-            // so we negate delta to match the visual direction.
-            const isLeft = this.getAttribute('justify') === 'left';
-            if (isLeft) {
-                delta = -delta;
-            }
-
             this.rotation += delta;
-            this.velocity = delta; // Simple velocity tracking
+
+            // Mirror velocity for left-justify so drag direction matches visual
+            const isLeft = this.getAttribute('justify') === 'left';
+            if (isLeft) this.velocity = -delta;
+            else this.velocity = delta;
             this.lastAngle = currentAngle;
 
             this.checkSnapFeedback();
@@ -949,12 +994,14 @@ class BzrDialMenu extends HTMLElement {
         }
 
         // Horizontal Positioning (Justify)
+        // Host edge is flush with the viewport edge (right:0 or left:0).
+        // The trigger nub center sits on that edge via CSS.
         if (justify === 'left') {
-            this.style.left = '-40px';
+            this.style.left = '0px';
             this.style.right = 'auto';
         } else {
             // Default to right (or explicit right)
-            this.style.right = '-40px';
+            this.style.right = '0px';
             this.style.left = 'auto';
         }
     }
@@ -963,50 +1010,65 @@ class BzrDialMenu extends HTMLElement {
         const count = this.items.length;
         if (count === 0) return;
 
-        // Configuration
         const isRight = this.getAttribute('justify') !== 'left';
-        // Arc Size: 180 degrees (PI)
-        this.snapAngle = 45 * (Math.PI / 180);
+        const anchor = this.getAttribute('anchor') || (isRight ? 'right' : 'left');
 
-        // Center Angle: PI (180) for Right justify, 0 for Left
-        const centerAngle = isRight ? Math.PI : 0;
+        // Active slot angle: where the selected item appears (the "perpendicular" at the edge)
+        // Right anchor → items fan leftward, active at PI (9 o'clock / left)
+        // Left anchor  → items fan rightward, active at 0 (3 o'clock / right)
+        // Top anchor   → items fan downward, active at PI/2 (6 o'clock / bottom)
+        // Bottom anchor→ items fan upward, active at -PI/2 (12 o'clock / top)
+        let activeSlotAngle;
+        if (anchor === 'left')       activeSlotAngle = 0;
+        else if (anchor === 'top')   activeSlotAngle = Math.PI / 2;
+        else if (anchor === 'bottom') activeSlotAngle = -Math.PI / 2;
+        else                         activeSlotAngle = Math.PI; // right (default)
 
-        // Place item 0 at the perpendicular (centerAngle).
-        // Subsequent items fan out by snapAngle increments.
-        // This ensures one icon ALWAYS lands at the perpendicular position.
+        // Full-dial: items evenly spaced across 360° (2*PI)
+        this.snapAngle = (Math.PI * 2) / count;
+
+        // Start from the active slot angle so first item appears at the active position
+        const startAngle = activeSlotAngle - (Math.PI * 2) / (2 * count);
+
         this.items.forEach((item, index) => {
-            let angle = centerAngle + (index * this.snapAngle);
+            let angle = startAngle + (index * this.snapAngle);
             item.dataset.baseAngle = angle;
         });
 
-        // Position items immediately after layout
         this.positionItems();
     }
 
     positionItems() {
         const isRight = this.getAttribute('justify') !== 'left';
+        const anchor = this.getAttribute('anchor') || (isRight ? 'right' : 'left');
         let minDiff = Infinity;
         let nearestIndex = -1;
 
-        // First pass: Calculate positions and find nearest
+        // Active slot is the "perpendicular" — where items face outward from the edge
+        let activeTargetAngle;
+        if (anchor === 'left')       activeTargetAngle = 0;           // 3 o'clock
+        else if (anchor === 'top')   activeTargetAngle = Math.PI / 2;  // 6 o'clock
+        else if (anchor === 'bottom') activeTargetAngle = -Math.PI / 2; // 12 o'clock
+        else                         activeTargetAngle = Math.PI;      // 9 o'clock (right default)
+
+        // First pass: Calculate positions and find nearest to active slot
         this.items.forEach((item, index) => {
             const baseAngle = parseFloat(item.dataset.baseAngle);
             let angle = baseAngle + this.rotation;
 
-            // Adjust angle for left-justified to mirror
+            // Mirror for left-justify so items fan outward (rightward) from the left edge
             if (!isRight) angle = -angle;
 
             const x = this.radius * Math.cos(angle);
             const y = this.radius * Math.sin(angle);
             item.style.transform = `translate(${x}px, ${y}px)`;
 
-            // Determine active proximity relative to the "active slot" (0 or PI)
-            let activeTargetAngle = isRight ? Math.PI : 0;
+            // Determine active proximity relative to the active slot
             let normalizedAngle = angle % (2 * Math.PI);
             if (normalizedAngle < 0) normalizedAngle += 2 * Math.PI;
 
             let diff = Math.abs(normalizedAngle - activeTargetAngle);
-            if (diff > Math.PI) diff = 2 * Math.PI - diff; // Handle wrap-around
+            if (diff > Math.PI) diff = 2 * Math.PI - diff;
 
             if (diff < minDiff) {
                 minDiff = diff;
@@ -1038,13 +1100,31 @@ class BzrDialMenu extends HTMLElement {
         }
     }
 
+    /** Position the dial-container origin at the trigger center in viewport coords.
+     *  Called on open, slide, and any time the trigger position changes.
+     *  Skipped in demo mode — dial-container stays absolutely positioned in host. */
+    _positionDialContainer() {
+        const rect = this.els.trigger.getBoundingClientRect();
+        const cx = rect.left + rect.width / 2;
+        const cy = rect.top + rect.height / 2;
+        const dc = this.els.container;
+        dc.classList.add('dial-fixed');
+        dc.style.left = `${cx}px`;
+        dc.style.top = `${cy}px`;
+    }
+
     toggle() {
         this.isOpen = !this.isOpen;
         if (this.isOpen) {
             this.setAttribute('open', '');
-            document.body.style.overflow = 'hidden'; // Lock scroll
-            // Centering logic can go here if we wanted strictly JS positioning
+            document.body.style.overflow = 'hidden';
+            if (!this.hasAttribute('demo')) {
+                this._positionDialContainer();
+            }
         } else {
+            this.els.container.classList.remove('dial-fixed');
+            this.els.container.style.left = '';
+            this.els.container.style.top = '';
             this.removeAttribute('open');
             document.body.style.overflow = '';
         }
@@ -1556,19 +1636,11 @@ class BzrDialMenu extends HTMLElement {
             this.rotation += this.velocity;
             this.velocity *= this.friction;
 
-            // Snapping
-            // Find nearest slot
+            // Snapping — wrap around for free spin wheel
             if (Math.abs(this.velocity) < 0.01) {
                 let slot = Math.round(this.rotation / this.snapAngle);
-
-                // Clamp to valid item range: slots -(count-1)..0
-                const maxSlot = this.items.length - 1;
-                if (slot > 0) slot = 0;
-                if (slot < -maxSlot) slot = -maxSlot;
-
                 let target = slot * this.snapAngle;
                 let diff = target - this.rotation;
-
                 this.velocity += diff * this.spring;
             }
         }
@@ -1591,28 +1663,18 @@ class BzrDialMenu extends HTMLElement {
         ctx.arc(cx, cy, this.radius, 0, Math.PI * 2);
         ctx.stroke();
 
-        // Active Indicator (at 3 o'clock? or 12?)
-        // Standard: 3 o'clock (0 degrees).
-        // Right Justified: 9 o'clock (PI degrees) - Lefty mode / Visible side.
+        // Active indicator — small dot at the active slot position
+        // Right-anchored (default): PI (9 o'clock / left)
+        // Left-anchored: 0 (3 o'clock / right)
+        const isLeft = this.getAttribute('justify') === 'left';
+        const indicatorAngle = isLeft ? 0 : Math.PI;
+        const ix = cx + Math.cos(indicatorAngle) * this.radius;
+        const iy = cy + Math.sin(indicatorAngle) * this.radius;
 
-        const isRight = this.getAttribute('justify') === 'right';
-        const indicatorAngle = isRight ? Math.PI : 0;
-
-        ctx.strokeStyle = '#00ff9d';
-        ctx.lineWidth = 4;
+        ctx.fillStyle = '#00ff9d';
         ctx.beginPath();
-
-        // Calculate position based on angle
-        // 0: cx + r, cy
-        // PI: cx - r, cy
-        let ix = cx + Math.cos(indicatorAngle) * this.radius;
-        let iy = cy + Math.sin(indicatorAngle) * this.radius;
-
-        // Draw a small tick/line
-        // Tangent is vertical.
-        ctx.moveTo(ix, iy - 10);
-        ctx.lineTo(ix, iy + 10);
-        ctx.stroke();
+        ctx.arc(ix, iy, 6, 0, Math.PI * 2);
+        ctx.fill();
 
         // Optional: Velocity Warp?
         if (Math.abs(this.velocity) > 0.05) {
@@ -1627,70 +1689,7 @@ class BzrDialMenu extends HTMLElement {
     }
 
     drawInnerControls(ctx, cx, cy) {
-        // Inner radius for the jog dial area
-        const r = 75;
-
-        ctx.save();
-
-        // 1. Subtle Track
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, 0, Math.PI * 2);
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.1)';
-        ctx.lineWidth = 30; // 60px - 90px zone
-        ctx.stroke();
-
-        // 2. Directional Arrows
-        ctx.strokeStyle = '#00ff9d';
-        ctx.lineWidth = 2;
-        ctx.lineCap = 'round';
-
-        // Right Side Arrow (Clockwise / Down)
-        // Arc from -10deg to +10deg
-        ctx.beginPath();
-        ctx.arc(cx, cy, r, -0.2, 0.2);
-        ctx.stroke();
-
-        // Arrowhead at bottom (0.2 rad)
-        let x = cx + Math.cos(0.2) * r;
-        let y = cy + Math.sin(0.2) * r;
-        // Simple triangle
-        ctx.beginPath();
-        ctx.moveTo(x, y);
-        ctx.lineTo(x - 5, y - 5);
-        ctx.lineTo(x + 2, y - 8);
-        // Actually slightly complex to align with tangent. 
-        // Let's use drawing primitives relative to angle.
-
-        this.drawArrowHead(ctx, cx, cy, r, 0.2, 1); // 1 = clockwise (Down)
-        this.drawArrowHead(ctx, cx, cy, r, -0.2, -1); // -1 = counter (Up)
-
-        // Left Side Arrow
-        // We want them to point "Outward" (Up at top, Down at bottom) to indicate scroll direction.
-        // Upper Left (PI - 0.2): CW is Up. So dir = 1.
-        // Lower Left (PI + 0.2): CCW is Down. So dir = -1.
-        this.drawArrowHead(ctx, cx, cy, r, Math.PI - 0.2, 1);
-        this.drawArrowHead(ctx, cx, cy, r, Math.PI + 0.2, -1);
-
-        ctx.restore();
-    }
-
-    drawArrowHead(ctx, cx, cy, r, angle, dir) {
-        let x = cx + Math.cos(angle) * r;
-        let y = cy + Math.sin(angle) * r;
-
-        ctx.save();
-        ctx.translate(x, y);
-        ctx.rotate(angle + (Math.PI / 2 * dir)); // Tangent
-
-        ctx.fillStyle = '#00ff9d';
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(-4, -8);
-        ctx.lineTo(4, -8);
-        ctx.closePath();
-        ctx.fill();
-
-        ctx.restore();
+        // Reserved for future use — inner jog dial removed for clean icon path
     }
 
 
