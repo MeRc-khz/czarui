@@ -81,12 +81,14 @@ function loadDemoComponent() {
         </bzr-dial-menu>
     `;
 
-    if (heroDemo) heroDemo.innerHTML = demoHTML;
-    if (fullDemo) fullDemo.innerHTML = demoHTML;
-
-    // Load the canonical bzr-dial-menu component
+    // Load the canonical bzr-dial-menu component FIRST
     const script = document.createElement('script');
     script.src = '/demo/bzr-dial-menu.js';
+    script.onload = () => {
+        // Only insert DOM after custom element is defined
+        if (heroDemo) heroDemo.innerHTML = demoHTML;
+        if (fullDemo) fullDemo.innerHTML = demoHTML;
+    };
     document.body.appendChild(script);
 }
 
