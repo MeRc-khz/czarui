@@ -46,118 +46,61 @@
         * { box-sizing: border-box; }
         body { background: #0a0a0a; color: #e5e5e5; font-family: 'Public Sans', sans-serif; }
         .font-display { font-family: 'Space Grotesk', sans-serif; }
-
-        /* Noise texture overlay */
         .noise::before {
             content: '';
             position: fixed;
             top: 0; left: 0; right: 0; bottom: 0;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
-            pointer-events: none;
-            z-index: 0;
+            pointer-events: none; z-index: 0;
         }
-
-        /* Grid pattern */
         .grid-bg {
-            background-image:
-                linear-gradient(to right, #1a1a1a 1px, transparent 1px),
-                linear-gradient(to bottom, #1a1a1a 1px, transparent 1px);
+            background-image: linear-gradient(to right, #1a1a1a 1px, transparent 1px), linear-gradient(to bottom, #1a1a1a 1px, transparent 1px);
             background-size: 64px 64px;
         }
-
-        /* Glow effects */
         .glow-accent { box-shadow: 0 0 40px rgba(0, 255, 157, 0.15), 0 0 80px rgba(0, 255, 157, 0.05); }
         .glow-solana { box-shadow: 0 0 40px rgba(153, 69, 255, 0.2), 0 0 80px rgba(20, 241, 149, 0.1); }
         .text-glow { text-shadow: 0 0 20px rgba(0, 255, 157, 0.5); }
-
-        /* Animated gradient border */
-        .gradient-border {
-            position: relative;
-            background: #111111;
-            border-radius: 16px;
-        }
+        .gradient-border { position: relative; background: #111111; border-radius: 16px; }
         .gradient-border::before {
-            content: '';
-            position: absolute;
-            inset: -1px;
-            border-radius: 17px;
+            content: ''; position: absolute; inset: -1px; border-radius: 17px;
             background: linear-gradient(135deg, #00ff9d, #9945FF, #00ff9d);
-            background-size: 200% 200%;
-            animation: gradient-rotate 4s ease infinite;
-            z-index: -1;
-            opacity: 0.5;
+            background-size: 200% 200%; animation: gradient-rotate 4s ease infinite; z-index: -1; opacity: 0.5;
         }
-        @keyframes gradient-rotate {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-
-        /* Counter animation */
+        @keyframes gradient-rotate { 0%, 100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
         .count-up { font-variant-numeric: tabular-nums; }
-
-        /* Pulse dot */
-        .pulse-dot {
-            width: 8px; height: 8px;
-            background: #00ff9d;
-            border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.5; transform: scale(1.5); }
-        }
-
-        /* Smooth scroll */
+        .pulse-dot { width: 8px; height: 8px; background: #00ff9d; border-radius: 50%; animation: pulse 2s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.5; transform: scale(1.5); } }
         html { scroll-behavior: smooth; }
-
-        /* Custom scrollbar */
         ::-webkit-scrollbar { width: 6px; }
         ::-webkit-scrollbar-track { background: #0a0a0a; }
         ::-webkit-scrollbar-thumb { background: #333; border-radius: 3px; }
         ::-webkit-scrollbar-thumb:hover { background: #555; }
-
-        /* Ticker */
-        .ticker-wrap {
-            overflow: hidden;
-            white-space: nowrap;
-        }
-        .ticker {
-            display: inline-block;
-            animation: ticker 30s linear infinite;
-        }
-        @keyframes ticker {
-            0% { transform: translateX(0); }
-            100% { transform: translateX(-50%); }
-        }
-
-        /* Proof bar */
-        .proof-stat {
-            background: linear-gradient(135deg, rgba(0,255,157,0.05), rgba(153,69,255,0.05));
-            border: 1px solid #222;
-        }
+        .ticker-wrap { overflow: hidden; white-space: nowrap; }
+        .ticker { display: inline-block; animation: ticker 30s linear infinite; }
+        @keyframes ticker { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+        .proof-stat { background: linear-gradient(135deg, rgba(0,255,157,0.05), rgba(153,69,255,0.05)); border: 1px solid #222; }
     </style>
+<link rel="icon" type="image/x-icon" href="/favicon.ico" />
 </head>
 <body class="noise grid-bg min-h-screen">
+
     <!-- Ticker -->
     <div class="fixed top-0 left-0 right-0 z-50 bg-[#0a0a0a]/95 backdrop-blur border-b border-[#222] py-2">
         <div class="ticker-wrap">
             <div class="ticker text-xs font-mono text-[#888]">
                 <span class="mx-8">WEB WORKS STUDIO — WYOMING DAO LLC</span>
-                <span class="mx-8 text-[#00ff9d]">● DEV EDITION NFTS LIVE ON SOLANA</span>
-                <span class="mx-8">BZR-DIAL v1.0.0-mvp — PRODUCTION READY</span>
-                <span class="mx-8 text-[#9945FF]">● PULL-BASED DIVIDENDS — ZERO CREATOR GAS</span>
-                <span class="mx-8">CONTRIBUTOR PROFIT SHARING — CODE-ENFORCED</span>
-                <span class="mx-8 text-[#00ff9d]">● 15% CONTRIBUTORS • 10% CONSERVATION — ON-CHAIN</span>
-                <span class="mx-8">ANCHOR v0.30 SMART CONTRACT — AUDITED</span>
-                <span class="mx-8 text-[#9945FF]">● LIFETIME DIVIDENDS — NOT "12 MONTHS"</span>
-                <span class="mx-8">PR GOVERNANCE — HOLDERS VOTE ON MERGES</span>
-                <span class="mx-8 text-[#00ff9d]">● PAINTED DOG CONSERVATION — 5 AFRICAN NATIONS</span>
-                <span class="mx-8">VERIFIED WALLETS — NO INTERMEDIARIES</span>
-                <span class="mx-8 text-[#00ff9d]">● WEB WORKS STUDIO — WYOMING DAO LLC</span>
-                <span class="mx-8">DEV EDITION NFTS LIVE ON SOLANA</span>
-                <span class="mx-8 text-[#9945FF]">● PULL-BASED DIVIDENDS — ZERO CREATOR GAS</span>
-                <span class="mx-8">CONTRIBUTOR PROFIT SHARING — CODE-ENFORCED</span>
-                <span class="mx-8 text-[#00ff9d]">● 15% OF EVERY SALE → DIVIDEND POOL</span>
+                <span class="mx-8 text-[#00ff9d]">● DEV EDITION NFTS — LIFETIME DIVIDENDS</span>
+                <span class="mx-8">BZR-DIAL v1.0.1-mvp — PRODUCTION READY</span>
+                <span class="mx-8 text-[#9945FF]">● 15% CONTRIBUTORS • 10% CONSERVATION — ON-CHAIN</span>
+                <span class="mx-8">PULL-BASED CLAIMS — ZERO CREATOR GAS</span>
+                <span class="mx-8 text-[#00ff9d]">● PR GOVERNANCE — HOLDERS VOTE ON MERGES</span>
+                <span class="mx-8">PAINTED DOG CONSERVATION — 5 AFRICAN NATIONS</span>
+                <span class="mx-8 text-[#9945FF]">● ANCHOR v0.30 — AUDITED SMART CONTRACT</span>
+                <span class="mx-8">WEB WORKS STUDIO — WYOMING DAO LLC</span>
+                <span class="mx-8 text-[#00ff9d]">● DEV EDITION NFTS — LIFETIME DIVIDENDS</span>
+                <span class="mx-8">BZR-DIAL v1.0.1-mvp — PRODUCTION READY</span>
+                <span class="mx-8 text-[#9945FF]">● 15% CONTRIBUTORS • 10% CONSERVATION — ON-CHAIN</span>
+                <span class="mx-8">PULL-BASED CLAIMS — ZERO CREATOR GAS</span>
             </div>
         </div>
     </div>
@@ -174,6 +117,7 @@
             </div>
             <div class="hidden md:flex items-center gap-8 text-sm text-[#888]">
                 <a href="#proof" class="hover:text-[#00ff9d] transition-colors">Proof</a>
+                <a href="#product" class="hover:text-[#00ff9d] transition-colors">Product</a>
                 <a href="#developer" class="hover:text-[#00ff9d] transition-colors">Dev Edition</a>
                 <a href="#conservation" class="hover:text-[#9945FF] transition-colors">🐾 Conservation</a>
                 <a href="#math" class="hover:text-[#00ff9d] transition-colors">The Math</a>
@@ -203,8 +147,8 @@
             </h1>
 
             <p class="text-xl text-[#888] max-w-2xl mx-auto mb-4 leading-relaxed">
-                The radial dial that replaced dropdowns. 1,762 lines of precision-engineered Web Components.
-                Zero dependencies. Production-hardened. And now — <span class="text-[#00ff9d]">you can own a piece of it.</span>
+                You're tired of dropdowns. Tired of subscriptions. Tired of building on someone else's terms.
+                <span class="text-[#00ff9d]">bzr-dial</span> is a viewport-edge radial dial — 1,762 lines of precision-engineered Web Components. Zero dependencies. Production-hardened.
             </p>
             <p class="text-sm text-[#666] max-w-xl mx-auto mb-10">
                 Web Works Studio is the IP engine inside The Conglomerate Group.
@@ -216,7 +160,7 @@
                 <a href="#tiers" class="w-full sm:w-auto bg-[#00ff9d] text-black px-8 py-4 rounded-xl text-lg font-bold hover:bg-[#00cc7d] transition-all hover:scale-105 glow-accent">
                     Back This Project →
                 </a>
-                <a href="#dev-edition" class="w-full sm:w-auto border border-[#333] text-[#e5e5e5] px-8 py-4 rounded-xl text-lg font-semibold hover:border-[#00ff9d] hover:text-[#00ff9d] transition-all">
+                <a href="#developer" class="w-full sm:w-auto border border-[#333] text-[#e5e5e5] px-8 py-4 rounded-xl text-lg font-semibold hover:border-[#00ff9d] hover:text-[#00ff9d] transition-all">
                     How Dev Edition Works
                 </a>
             </div>
@@ -224,12 +168,12 @@
             <!-- Proof bar -->
             <div class="grid grid-cols-2 md:grid-cols-5 gap-3 max-w-4xl mx-auto">
                 <div class="proof-stat rounded-xl p-4 text-center">
-                    <div class="font-display text-2xl font-bold text-[#00ff9d] count-up">1,762</div>
-                    <div class="text-xs text-[#666] mt-1">Lines of Code</div>
+                    <div class="font-display text-2xl font-bold text-[#00ff9d] count-up">0</div>
+                    <div class="text-xs text-[#666] mt-1">Dependencies</div>
                 </div>
                 <div class="proof-stat rounded-xl p-4 text-center">
-                    <div class="font-display text-2xl font-bold text-[#9945FF]">0</div>
-                    <div class="text-xs text-[#666] mt-1">Dependencies</div>
+                    <div class="font-display text-2xl font-bold text-[#9945FF]">1,762</div>
+                    <div class="text-xs text-[#666] mt-1">Lines of Code</div>
                 </div>
                 <div class="proof-stat rounded-xl p-4 text-center">
                     <div class="font-display text-2xl font-bold text-[#00ff9d]">15%</div>
@@ -248,65 +192,57 @@
     </section>
 
     <!-- The Product -->
-    <section class="py-20 px-6 border-t border-[#1a1a1a]">
+    <section id="product" class="py-20 px-6 border-t border-[#1a1a1a]">
         <div class="max-w-6xl mx-auto">
             <div class="grid md:grid-cols-2 gap-12 items-center">
                 <div>
-                    <div class="text-xs font-mono text-[#00ff9d] mb-3">FIRST PRODUCT — v1.0.0-mvp</div>
+                    <div class="text-xs font-mono text-[#00ff9d] mb-3">FIRST PRODUCT — v1.0.1-mvp</div>
                     <h2 class="font-display text-4xl font-bold mb-6">bzr-dial</h2>
                     <p class="text-[#888] leading-relaxed mb-6">
-                        A viewport-edge-anchored radial dial menu. Physics-based inertial scrolling.
-                        One-handed thumb navigation. Hybrid Canvas/DOM rendering with Shadow DOM encapsulation.
-                        Haptic feedback. Audio cues. License validation. Watermarking for unlicensed use.
+                        A viewport-edge-anchored radial dial menu. One-handed thumb navigation.
+                        Physics-based inertial scrolling with intelligent snapping. Hybrid Canvas/DOM rendering.
+                        Shadow DOM encapsulation. Zero framework dependencies.
                     </p>
                     <ul class="space-y-3 mb-8">
                         <li class="flex items-start gap-3 text-sm text-[#ccc]">
                             <span class="text-[#00ff9d] mt-0.5">✓</span>
-                            <span>Viewport-edge trigger nub — half in, half out. Always accessible.</span>
+                            <span><strong class="text-[#e5e5e5]">Viewport-edge trigger</strong> — half in, half out. Always accessible. Never in the way.</span>
                         </li>
                         <li class="flex items-start gap-3 text-sm text-[#ccc]">
                             <span class="text-[#00ff9d] mt-0.5">✓</span>
-                            <span>360° icon spacing with physics-based snap. No visual artifacts.</span>
+                            <span><strong class="text-[#e5e5e5]">360° snap</strong> — physics-based rotation. No visual artifacts. Clean indicator dot.</span>
                         </li>
                         <li class="flex items-start gap-3 text-sm text-[#ccc]">
                             <span class="text-[#00ff9d] mt-0.5">✓</span>
-                            <span>Zero framework dependencies. Native Web Components. Any stack.</span>
+                            <span><strong class="text-[#e5e5e5]">Modal system</strong> — audio, video, image, email, phone, map. Backdrop close. Slide mode.</span>
                         </li>
                         <li class="flex items-start gap-3 text-sm text-[#ccc]">
                             <span class="text-[#00ff9d] mt-0.5">✓</span>
-                            <span>Canvas indicator dot + thin rail. Clean. Tactical. Production-grade.</span>
+                            <span><strong class="text-[#e5e5e5]">License-gated</strong> — Stripe backend. Auto-generated keys. Watermarking for unlicensed use.</span>
                         </li>
                         <li class="flex items-start gap-3 text-sm text-[#ccc]">
                             <span class="text-[#00ff9d] mt-0.5">✓</span>
-                            <span>Modal system with backdrop close. Slide mode. Fullscreen mode.</span>
-                        </li>
-                        <li class="flex items-start gap-3 text-sm text-[#ccc]">
-                            <span class="text-[#00ff9d] mt-0.5">✓</span>
-                            <span>License-gated distribution. Stripe backend. Auto-generated keys.</span>
+                            <span><strong class="text-[#e5e5e5]">Any stack</strong> — vanilla JS, React, Vue, Angular. Native Web Components. Drop it in.</span>
                         </li>
                     </ul>
                     <a href="https://czarui.game4real.us" target="_blank" class="text-[#00ff9d] text-sm font-semibold hover:underline">
-                        See it in action → czarui.game4real.us
+                        Try the live demo → czarui.game4real.us
                     </a>
                 </div>
                 <div class="relative">
                     <div class="gradient-border glow-accent rounded-2xl p-1">
-                        <div class="bg-[#111] rounded-xl p-8 text-center">
-                            <div class="w-24 h-24 mx-auto mb-6 rounded-full border-2 border-[#00ff9d]/30 flex items-center justify-center relative">
-                                <div class="w-16 h-16 rounded-full border border-[#00ff9d]/20 flex items-center justify-center">
-                                    <div class="w-3 h-3 rounded-full bg-[#00ff9d] shadow-[0_0_10px_#00ff9d]"></div>
+                        <div class="bg-[#111] rounded-xl overflow-hidden">
+                            <img src="/media/illienfront.png" alt="bzr-dial component preview" class="w-full h-auto object-cover rounded-t-xl">
+                            <div class="p-6 text-center">
+                                <div class="font-display text-lg font-bold mb-2">bzr-dial-menu</div>
+                                <div class="text-xs text-[#666] font-mono mb-4">&lt;bzr-dial-menu&gt;&lt;/bzr-dial-menu&gt;</div>
+                                <div class="flex items-center justify-center gap-4 text-xs text-[#555]">
+                                    <span>v1.0.1-mvp</span>
+                                    <span>•</span>
+                                    <span>MVP LOCKED</span>
+                                    <span>•</span>
+                                    <span class="text-[#00ff9d]">PRODUCTION</span>
                                 </div>
-                                <div class="absolute top-2 right-2 w-2 h-2 rounded-full bg-[#00ff9d]/60"></div>
-                                <div class="absolute bottom-4 left-3 w-2 h-2 rounded-full bg-[#00ff9d]/40"></div>
-                            </div>
-                            <div class="font-display text-lg font-bold mb-2">bzr-dial-menu</div>
-                            <div class="text-xs text-[#666] font-mono mb-4">&lt;bzr-dial-menu&gt;&lt;/bzr-dial-menu&gt;</div>
-                            <div class="flex items-center justify-center gap-4 text-xs text-[#555]">
-                                <span>v1.0.0-mvp</span>
-                                <span>•</span>
-                                <span>MVP LOCKED</span>
-                                <span>•</span>
-                                <span class="text-[#00ff9d]">PRODUCTION</span>
                             </div>
                         </div>
                     </div>
@@ -323,12 +259,11 @@
                 <h2 class="font-display text-4xl font-bold mb-4">We Don't Do SaaS.<br>We Do Equity.</h2>
                 <p class="text-[#888] max-w-2xl mx-auto">
                     Every component library wants a monthly subscription. We think that's backwards.
-                    You should own the tools you depend on.
+                    You should own the tools you depend on. Not rent them.
                 </p>
             </div>
 
             <div class="grid md:grid-cols-3 gap-6">
-                <!-- Card 1 -->
                 <div class="bg-[#111] border border-[#222] rounded-2xl p-8 hover:border-[#333] transition-colors">
                     <div class="text-4xl mb-4">💸</div>
                     <h3 class="font-display text-xl font-bold mb-3 text-[#e5e5e5]">SaaS Model</h3>
@@ -339,31 +274,23 @@
                         <li>• No say in roadmap</li>
                         <li>• No ownership of anything</li>
                     </ul>
-                    <div class="mt-4 pt-4 border-t border-[#222] text-xs text-[#444]">
-                        The standard playbook
-                    </div>
+                    <div class="mt-4 pt-4 border-t border-[#222] text-xs text-[#444]">The standard playbook</div>
                 </div>
 
-                <!-- Card 2 -->
                 <div class="bg-[#111] border border-[#00ff9d]/30 rounded-2xl p-8 glow-accent relative">
-                    <div class="absolute -top-3 left-6 bg-[#00ff9d] text-black text-xs font-bold px-3 py-1 rounded-full">
-                        OUR MODEL
-                    </div>
+                    <div class="absolute -top-3 left-6 bg-[#00ff9d] text-black text-xs font-bold px-3 py-1 rounded-full">OUR MODEL</div>
                     <div class="text-4xl mb-4">🏛️</div>
                     <h3 class="font-display text-xl font-bold mb-3 text-[#00ff9d]">Dev Edition NFT</h3>
                     <ul class="space-y-2 text-sm text-[#ccc]">
-                        <li>• Buy once, earn forever</li>
+                        <li>• Buy once, <span class="text-[#00ff9d]">earn forever</span></li>
                         <li>• You build, <span class="text-[#00ff9d]">you profit</span></li>
-                        <li>• NFT = share certificate</li>
+                        <li>• NFT = <span class="text-[#00ff9d]">share certificate</span></li>
                         <li>• Vote on PRs (governance)</li>
                         <li>• <span class="text-[#00ff9d]">Lifetime dividends</span></li>
                     </ul>
-                    <div class="mt-4 pt-4 border-t border-[#222] text-xs text-[#00ff9d]">
-                        Wyoming DAO LLC — legally recognized
-                    </div>
+                    <div class="mt-4 pt-4 border-t border-[#222] text-xs text-[#00ff9d]">Wyoming DAO LLC — legally recognized</div>
                 </div>
 
-                <!-- Card 3 -->
                 <div class="bg-[#111] border border-[#222] rounded-2xl p-8 hover:border-[#333] transition-colors">
                     <div class="text-4xl mb-4">🔒</div>
                     <h3 class="font-display text-xl font-bold mb-3 text-[#e5e5e5]">Open Source (Typical)</h3>
@@ -374,9 +301,7 @@
                         <li>• Corporate capture</li>
                         <li>• No legal ownership</li>
                     </ul>
-                    <div class="mt-4 pt-4 border-t border-[#222] text-xs text-[#444]">
-                        Nice in theory. Broken in practice.
-                    </div>
+                    <div class="mt-4 pt-4 border-t border-[#222] text-xs text-[#444]">Nice in theory. Broken in practice.</div>
                 </div>
             </div>
         </div>
@@ -399,7 +324,7 @@
                 <div class="bg-[#111] border border-[#222] rounded-xl p-6 text-center">
                     <div class="w-10 h-10 rounded-full bg-[#9945FF]/20 text-[#9945FF] flex items-center justify-center mx-auto mb-3 font-display font-bold">1</div>
                     <div class="font-display font-bold text-sm mb-2">Buy NFT</div>
-                    <div class="text-xs text-[#666]">Dev Edition NFT on Solana (~0.5 SOL). Your share certificate.</div>
+                    <div class="text-xs text-[#666]">Dev Edition NFT on Solana. Your share certificate. Starting ~0.5 SOL.</div>
                 </div>
                 <div class="bg-[#111] border border-[#222] rounded-xl p-6 text-center">
                     <div class="w-10 h-10 rounded-full bg-[#9945FF]/20 text-[#9945FF] flex items-center justify-center mx-auto mb-3 font-display font-bold">2</div>
@@ -419,7 +344,7 @@
                 <div class="bg-[#111] border border-[#00ff9d]/30 rounded-xl p-6 text-center glow-accent">
                     <div class="w-10 h-10 rounded-full bg-[#00ff9d]/20 text-[#00ff9d] flex items-center justify-center mx-auto mb-3 font-display font-bold">5</div>
                     <div class="font-display font-bold text-sm mb-2 text-[#00ff9d]">Earn Forever</div>
-                    <div class="text-xs text-[#888]">Every bzr-dial sale → 15% to dividend pool → you claim via pull-based contract.</div>
+                    <div class="text-xs text-[#888]">Every sale → 15% to dividend pool → you claim via pull-based contract.</div>
                 </div>
             </div>
 
@@ -440,21 +365,21 @@
                             <span class="text-[#00ff9d] text-xs mt-0.5">●</span>
                             <div>
                                 <div class="text-sm font-semibold text-[#ccc]">Pull-Based Claims</div>
-                                <div class="text-xs text-[#666]">You withdraw on your schedule. We never push. Zero gas on us.</div>
+                                <div class="text-xs text-[#666]">You withdraw on your schedule. We never push. Zero gas on us. Scales to 10k+ holders.</div>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
                             <span class="text-[#00ff9d] text-xs mt-0.5">●</span>
                             <div>
                                 <div class="text-sm font-semibold text-[#ccc]">Lifetime Dividends</div>
-                                <div class="text-xs text-[#666]">Not "12 months." Not "while active." Forever. Code doesn't expire.</div>
+                                <div class="text-xs text-[#666]">Not "12 months." Not "while active." Forever. Code doesn't expire. Your NFT keeps earning.</div>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
                             <span class="text-[#00ff9d] text-xs mt-0.5">●</span>
                             <div>
                                 <div class="text-sm font-semibold text-[#ccc]">PR Governance</div>
-                                <div class="text-xs text-[#666]">On-chain voting. Dev Edition holders decide what gets merged.</div>
+                                <div class="text-xs text-[#666]">On-chain voting. Dev Edition holders decide what gets merged. Your code, your vote.</div>
                             </div>
                         </div>
                     </div>
@@ -463,21 +388,21 @@
                             <span class="text-[#9945FF] text-xs mt-0.5">●</span>
                             <div>
                                 <div class="text-sm font-semibold text-[#ccc]">Wyoming DAO LLC</div>
-                                <div class="text-xs text-[#666]">Your NFT is a legally recognized share certificate. Real legal standing.</div>
+                                <div class="text-xs text-[#666]">Your NFT is a legally recognized share certificate. Real legal standing. Not a gimmick.</div>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
                             <span class="text-[#9945FF] text-xs mt-0.5">●</span>
                             <div>
                                 <div class="text-sm font-semibold text-[#ccc]">Proportional Splits</div>
-                                <div class="text-xs text-[#666]">Pool split by verified contribution weight. More PRs = bigger share.</div>
+                                <div class="text-xs text-[#666]">Pool split by verified contribution weight. More PRs = bigger share. Meritocratic.</div>
                             </div>
                         </div>
                         <div class="flex items-start gap-3">
                             <span class="text-[#9945FF] text-xs mt-0.5">●</span>
                             <div>
                                 <div class="text-sm font-semibold text-[#ccc]">Transparent Ledger</div>
-                                <div class="text-xs text-[#666]">Every sale, every claim, every vote — on-chain. Auditable by anyone.</div>
+                                <div class="text-xs text-[#666]">Every sale, every claim, every vote — on-chain. Auditable by anyone. No black boxes.</div>
                             </div>
                         </div>
                     </div>
@@ -493,34 +418,28 @@
                 <div class="text-xs font-mono text-[#9945FF] mb-3">PAINTED DOGS INTERACTIVE INFOTAINMENT</div>
                 <h2 class="font-display text-4xl font-bold mb-4">Every Build Funds Conservation.<br>On-Chain. No Bullshit.</h2>
                 <p class="text-[#888] max-w-2xl mx-auto">
-                    Painted Dogs Interactive Infotainment is the operating studio behind every Web Works product.
-                    A percentage of every sale goes directly to protecting the <em>Lycaon pictus</em> —
-                    the African wild dog — in its native habitat. Enforced by Solana smart contract.
+                    Fewer than 6,600 African wild dogs remain in the wild.
+                    Painted Dogs Interactive Infotainment — the operating studio behind Web Works —
+                    directs 10% of every sale to conservation. Enforced by smart contract.
                     Not a promise. <span class="text-[#00ff9d]">Code.</span>
                 </p>
             </div>
 
             <div class="grid md:grid-cols-2 gap-8 items-center mb-12">
-                <!-- Logo -->
                 <div class="flex justify-center">
                     <div class="w-64 h-64 rounded-2xl bg-[#111] border border-[#222] flex items-center justify-center p-8 glow-solana">
                         <img src="/assets/painteddogs-logo.svg" alt="Painted Dogs Interactive Infotainment" class="w-full h-full object-contain">
                     </div>
                 </div>
-                <!-- Info -->
                 <div>
                     <h3 class="font-display text-2xl font-bold mb-4">Why Painted Dogs?</h3>
                     <p class="text-[#888] leading-relaxed mb-6">
                         The African wild dog (<em>Lycaon pictus</em>) is one of the most endangered mammals on Earth.
-                        Fewer than 6,600 remain in the wild. Habitat loss, human-wildlife conflict, and disease have
-                        decimated their populations across sub-Saharan Africa.
-                    </p>
-                    <p class="text-[#888] leading-relaxed mb-6">
-                        Painted Dogs Interactive Infotainment doesn't just borrow their name — it funds their survival.
-                        Every Web Works product sold directs a portion of revenue to conservation organizations working on the ground.
+                        Habitat loss, human-wildlife conflict, and disease have decimated their populations
+                        across sub-Saharan Africa. They're not pandas. They're not tigers. They don't have a
+                        billion-dollar conservation industry behind them. They have us.
                     </p>
 
-                    <!-- On-chain enforcement callout -->
                     <div class="bg-[#111] border border-[#00ff9d]/20 rounded-xl p-5 mb-6 glow-accent">
                         <div class="flex items-center gap-2 mb-3">
                             <span class="text-[#00ff9d]">⚡</span>
@@ -553,23 +472,23 @@
                         <div class="text-xs font-mono text-[#666] mb-3">CONSERVATION ALLOCATION — VERIFIED WALLETS</div>
                         <div class="space-y-3">
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-[#ccc]">Zimbabwe</span>
+                                <span class="text-sm text-[#ccc]">🇿🇼 Zimbabwe</span>
                                 <span class="text-sm text-[#9945FF] font-mono">Painted Dog Conservation</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-[#ccc]">Botswana</span>
+                                <span class="text-sm text-[#ccc]">🇧🇼 Botswana</span>
                                 <span class="text-sm text-[#9945FF] font-mono">Kalahari Research & Conservation</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-[#ccc]">South Africa</span>
+                                <span class="text-sm text-[#ccc]">🇿🇦 South Africa</span>
                                 <span class="text-sm text-[#9945FF] font-mono">Endangered Wildlife Trust</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-[#ccc]">Mozambique</span>
+                                <span class="text-sm text-[#ccc]">🇲🇿 Mozambique</span>
                                 <span class="text-sm text-[#9945FF] font-mono">Mozambique Wildlife Alliance</span>
                             </div>
                             <div class="flex justify-between items-center">
-                                <span class="text-sm text-[#ccc]">Namibia</span>
+                                <span class="text-sm text-[#ccc]">🇳🇦 Namibia</span>
                                 <span class="text-sm text-[#9945FF] font-mono">Namibian Wild Dog Project</span>
                             </div>
                         </div>
@@ -580,7 +499,6 @@
                 </div>
             </div>
 
-            <!-- Impact stats -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-[#111] border border-[#222] rounded-xl p-5 text-center">
                     <div class="font-display text-2xl font-bold text-[#9945FF]">10%</div>
@@ -609,12 +527,11 @@
                 <div class="text-xs font-mono text-[#00ff9d] mb-3">THE MATH — NO VAGUE PROMISES</div>
                 <h2 class="font-display text-4xl font-bold mb-4">Prove It.</h2>
                 <p class="text-[#888] max-w-2xl mx-auto">
-                    Here's exactly how the money flows. 15% of every sale goes to the Contributor Dividend Pool.
-                    Split proportionally among verified contributors. Forever.
+                    15% of every sale goes to the Contributor Dividend Pool.
+                    Split proportionally among verified contributors. Forever. Here's exactly what that means.
                 </p>
             </div>
 
-            <!-- Revenue table -->
             <div class="bg-[#111] border border-[#222] rounded-2xl overflow-hidden mb-8">
                 <div class="p-6 border-b border-[#222]">
                     <div class="font-display font-bold text-lg">Dividend Pool Projections</div>
@@ -672,7 +589,6 @@
                 </div>
             </div>
 
-            <!-- Per-contributor example -->
             <div class="grid md:grid-cols-2 gap-6">
                 <div class="bg-[#111] border border-[#222] rounded-2xl p-6">
                     <div class="font-display font-bold mb-4">Example: Your Share</div>
@@ -751,9 +667,7 @@
                         <li class="flex items-center gap-2"><span class="text-[#555]">✓</span> Campaign updates</li>
                         <li class="flex items-center gap-2"><span class="text-[#555]">✓</span> Early access to demos</li>
                     </ul>
-                    <button class="w-full border border-[#333] text-[#ccc] py-3 rounded-xl text-sm font-semibold hover:border-[#00ff9d] hover:text-[#00ff9d] transition-colors">
-                        Select
-                    </button>
+                    <button class="w-full border border-[#333] text-[#ccc] py-3 rounded-xl text-sm font-semibold hover:border-[#00ff9d] hover:text-[#00ff9d] transition-colors">Select</button>
                 </div>
 
                 <!-- Tier 2: License -->
@@ -762,22 +676,18 @@
                     <div class="font-display text-3xl font-bold mb-1">$49</div>
                     <div class="text-sm text-[#888] mb-6">Commercial License</div>
                     <ul class="space-y-2 text-sm text-[#aaa] mb-8">
-                        <li class="flex items-center gap-2"><span class="text-[#00ff9d]">✓</span> Full bzr-dial license</li>
                         <li class="flex items-center gap-2"><span class="text-[#00ff9d]">✓</span> Production build</li>
-                        <li class="flex items-center gap-2"><span class="text-[#00ff9d]">✓</span> 1 year of updates</li>
+                        <li class="flex items-center gap-2"><span class="text-[#00ff9d]">✓</span> 1 project license</li>
+                        <li class="flex items-center gap-2"><span class="text-[#00ff9d]">✓</span> Lifetime updates</li>
                         <li class="flex items-center gap-2"><span class="text-[#00ff9d]">✓</span> Email support</li>
                         <li class="flex items-center gap-2"><span class="text-[#555]">✓</span> All Supporter perks</li>
                     </ul>
-                    <button class="w-full border border-[#00ff9d]/30 text-[#00ff9d] py-3 rounded-xl text-sm font-semibold hover:bg-[#00ff9d]/10 transition-colors">
-                        Select
-                    </button>
+                    <button class="w-full border border-[#00ff9d]/30 text-[#00ff9d] py-3 rounded-xl text-sm font-semibold hover:bg-[#00ff9d]/10 transition-colors">Select</button>
                 </div>
 
                 <!-- Tier 3: Dev Edition (FEATURED) -->
                 <div class="bg-[#111] border-2 border-[#00ff9d]/40 rounded-2xl p-6 glow-accent relative">
-                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00ff9d] text-black text-xs font-bold px-4 py-1 rounded-full">
-                        MOST POPULAR
-                    </div>
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00ff9d] text-black text-xs font-bold px-4 py-1 rounded-full">MOST POPULAR</div>
                     <div class="text-xs font-mono text-[#00ff9d] mb-2">TIER 3 — NFT</div>
                     <div class="font-display text-3xl font-bold mb-1">0.5 SOL</div>
                     <div class="text-sm text-[#888] mb-6">Dev Edition</div>
@@ -789,16 +699,12 @@
                         <li class="flex items-center gap-2"><span class="text-[#00ff9d]">★</span> Early access to v2</li>
                         <li class="flex items-center gap-2"><span class="text-[#00ff9d]">★</span> All License perks</li>
                     </ul>
-                    <button class="w-full bg-[#00ff9d] text-black py-3 rounded-xl text-sm font-bold hover:bg-[#00cc7d] transition-colors">
-                        Select
-                    </button>
+                    <button class="w-full bg-[#00ff9d] text-black py-3 rounded-xl text-sm font-bold hover:bg-[#00cc7d] transition-colors">Select</button>
                 </div>
 
                 <!-- Tier 4: Founder's Circle -->
                 <div class="bg-[#111] border border-[#9945FF]/30 rounded-2xl p-6 glow-solana relative">
-                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#9945FF] text-white text-xs font-bold px-4 py-1 rounded-full">
-                        FOUNDER
-                    </div>
+                    <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#9945FF] text-white text-xs font-bold px-4 py-1 rounded-full">FOUNDER</div>
                     <div class="text-xs font-mono text-[#9945FF] mb-2">TIER 4 — NFT</div>
                     <div class="font-display text-3xl font-bold mb-1">2 SOL</div>
                     <div class="text-sm text-[#888] mb-6">Founder's Circle</div>
@@ -809,22 +715,17 @@
                         <li class="flex items-center gap-2"><span class="text-[#9945FF]">★</span> Quarterly strategy calls</li>
                         <li class="flex items-center gap-2"><span class="text-[#9945FF]">★</span> All Dev Edition perks</li>
                     </ul>
-                    <button class="w-full bg-[#9945FF] text-white py-3 rounded-xl text-sm font-bold hover:bg-[#7a35dd] transition-colors">
-                        Select
-                    </button>
+                    <button class="w-full bg-[#9945FF] text-white py-3 rounded-xl text-sm font-bold hover:bg-[#7a35dd] transition-colors">Select</button>
                 </div>
             </div>
 
-            <!-- Enterprise -->
             <div class="mt-8 bg-[#111] border border-[#222] rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div>
                     <div class="text-xs font-mono text-[#666] mb-1">CUSTOM</div>
                     <div class="font-display text-2xl font-bold mb-2">Enterprise</div>
                     <div class="text-sm text-[#888]">SLA • Dedicated support • Custom builds • White-label licensing</div>
                 </div>
-                <a href="mailto:sales@bzzrr.link?subject=Enterprise License Inquiry" class="bg-[#222] border border-[#333] text-[#ccc] px-8 py-3 rounded-xl text-sm font-semibold hover:border-[#00ff9d] hover:text-[#00ff9d] transition-colors whitespace-nowrap">
-                    Contact Sales
-                </a>
+                <a href="mailto:sales@bzzrr.link?subject=Enterprise License Inquiry" class="bg-[#222] border border-[#333] text-[#ccc] px-8 py-3 rounded-xl text-sm font-semibold hover:border-[#00ff9d] hover:text-[#00ff9d] transition-colors whitespace-nowrap">Contact Sales</a>
             </div>
         </div>
     </section>
@@ -841,7 +742,6 @@
             </div>
 
             <div class="space-y-6">
-                <!-- Phase 1: Done -->
                 <div class="bg-[#111] border border-[#00ff9d]/20 rounded-2xl p-6 flex items-start gap-6">
                     <div class="w-12 h-12 rounded-xl bg-[#00ff9d]/10 flex items-center justify-center flex-shrink-0">
                         <span class="text-[#00ff9d] text-xl">✓</span>
@@ -855,7 +755,6 @@
                     </div>
                 </div>
 
-                <!-- Phase 2: Now -->
                 <div class="bg-[#111] border border-[#9945FF]/30 rounded-2xl p-6 flex items-start gap-6 glow-solana">
                     <div class="w-12 h-12 rounded-xl bg-[#9945FF]/10 flex items-center justify-center flex-shrink-0">
                         <span class="text-[#9945FF] text-xl">⚡</span>
@@ -869,7 +768,6 @@
                     </div>
                 </div>
 
-                <!-- Phase 3 -->
                 <div class="bg-[#111] border border-[#222] rounded-2xl p-6 flex items-start gap-6">
                     <div class="w-12 h-12 rounded-xl bg-[#222] flex items-center justify-center flex-shrink-0">
                         <span class="text-[#555] text-xl">2</span>
@@ -879,11 +777,10 @@
                             <div class="font-display font-bold text-lg">Phase 3: bzr-dial v2</div>
                             <span class="text-xs bg-[#222] text-[#666] px-2 py-0.5 rounded-full">$25K STRETCH</span>
                         </div>
-                        <div class="text-sm text-[#888]">Haptic API integration. Voice control. Accessibility audit. Performance benchmarks. Contributor PRs merged from governance votes.</div>
+                        <div class="text-sm text-[#888]">Haptic API. Voice control. Accessibility audit. Contributor PRs merged from governance votes.</div>
                     </div>
                 </div>
 
-                <!-- Phase 4 -->
                 <div class="bg-[#111] border border-[#222] rounded-2xl p-6 flex items-start gap-6">
                     <div class="w-12 h-12 rounded-xl bg-[#222] flex items-center justify-center flex-shrink-0">
                         <span class="text-[#555] text-xl">3</span>
@@ -893,11 +790,10 @@
                             <div class="font-display font-bold text-lg">Phase 4: Second Component</div>
                             <span class="text-xs bg-[#222] text-[#666] px-2 py-0.5 rounded-full">$50K STRETCH</span>
                         </div>
-                        <div class="text-sm text-[#888]">Edge-drawer panel. Slide-out navigation. Same viewport-edge DNA. Dev Edition holders get first access + dividend rights on new product.</div>
+                        <div class="text-sm text-[#888]">Edge-drawer panel. Slide-out navigation. Same viewport-edge DNA. Dev Edition holders get dividend rights on new product.</div>
                     </div>
                 </div>
 
-                <!-- Phase 5 -->
                 <div class="bg-[#111] border border-[#222] rounded-2xl p-6 flex items-start gap-6">
                     <div class="w-12 h-12 rounded-xl bg-[#222] flex items-center justify-center flex-shrink-0">
                         <span class="text-[#555] text-xl">4</span>
@@ -907,7 +803,7 @@
                             <div class="font-display font-bold text-lg">Phase 5: Full Library</div>
                             <span class="text-xs bg-[#222] text-[#666] px-2 py-0.5 rounded-full">$100K STRETCH</span>
                         </div>
-                        <div class="text-sm text-[#888]">5-component Web Works library. Modal system. Toast notifications. All with Dev Edition dividend rights. One dashboard to claim everything.</div>
+                        <div class="text-sm text-[#888]">5-component Web Works library. Modal system. Toast notifications. All with Dev Edition dividend rights.</div>
                     </div>
                 </div>
             </div>
@@ -928,7 +824,7 @@
                 <a href="#tiers" class="w-full sm:w-auto bg-[#00ff9d] text-black px-10 py-4 rounded-xl text-lg font-bold hover:bg-[#00cc7d] transition-all hover:scale-105 glow-accent">
                     Back This Project →
                 </a>
-                <a href="https://czarui.game4real.us" target="_blank" w-full sm:w-auto border border-[#333] text-[#e5e5e5] px-10 py-4 rounded-xl text-lg font-semibold hover:border-[#00ff9d] transition-all">
+                <a href="https://czarui.game4real.us" target="_blank" class="w-full sm:w-auto border border-[#333] text-[#e5e5e5] px-10 py-4 rounded-xl text-lg font-semibold hover:border-[#00ff9d] transition-all">
                     Try the Demo
                 </a>
             </div>
@@ -981,9 +877,9 @@
                     <div class="font-display font-bold text-sm mb-4">🐾 Conservation</div>
                     <ul class="space-y-2 text-xs text-[#666]">
                         <li>10% of net revenue</li>
-                        <li>Zimbabwe • PDC</li>
-                        <li>Botswana • KRC</li>
-                        <li>South Africa • EWT</li>
+                        <li>🇿🇼 Zimbabwe • PDC</li>
+                        <li>🇧🇼 Botswana • KRC</li>
+                        <li>🇿🇦 South Africa • EWT</li>
                         <li>5 African nations</li>
                     </ul>
                 </div>
@@ -1002,6 +898,7 @@
                 </div>
                 <div class="flex items-center gap-4 text-xs text-[#444]">
                     <span>Built by Painted Dogs Interactive Infotainment</span>
+                    <img src="/media/qrillielogo.png" alt="Qrillien" class="w-4 h-4 opacity-50">
                 </div>
             </div>
         </div>
