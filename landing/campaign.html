@@ -42,6 +42,67 @@
             }
         }
     </script>
+    <script>
+        // Dynamic SOL/USD price fetching
+        const TIER_USD = {
+            tier3: 300.00,
+            tier4: 500.00
+        };
+        let solUsdPrice = 0;
+        let priceUpdateInterval = null;
+
+        async function fetchSolPrice() {
+            try {
+                const response = await fetch('https://api.coingecko.com/api/v3/simple/price?ids=solana&vs_currencies=usd');
+                const data = await response.json();
+                if (data.solana && data.solana.usd) {
+                    solUsdPrice = data.solana.usd;
+                    updateSolPrices();
+                    updatePriceIndicator();
+                }
+            } catch (e) {
+                console.warn('Failed to fetch SOL price:', e);
+                // Fallback price
+                solUsdPrice = 150;
+                updateSolPrices();
+                updatePriceIndicator();
+            }
+        }
+
+        function updateSolPrices() {
+            if (!solUsdPrice) return;
+            
+            const tier3Sol = (TIER_USD.tier3 / solUsdPrice).toFixed(4);
+            const tier4Sol = (TIER_USD.tier4 / solUsdPrice).toFixed(4);
+
+            // Update Tier 3 (Dev Edition)
+            const tier3UsdEl = document.getElementById('tier3-usd');
+            const tier3SolEl = document.getElementById('tier3-sol');
+            if (tier3UsdEl) tier3UsdEl.textContent = `$${TIER_USD.tier3.toFixed(2)}`;
+            if (tier3SolEl) tier3SolEl.textContent = tier3Sol;
+
+            // Update Tier 4 (Founder's Circle)
+            const tier4UsdEl = document.getElementById('tier4-usd');
+            const tier4SolEl = document.getElementById('tier4-sol');
+            if (tier4UsdEl) tier4UsdEl.textContent = `$${TIER_USD.tier4.toFixed(2)}`;
+            if (tier4SolEl) tier4SolEl.textContent = tier4Sol;
+        }
+
+        function updatePriceIndicator() {
+            const priceIndicator = document.getElementById('sol-price-indicator');
+            if (priceIndicator && solUsdPrice) {
+                priceIndicator.textContent = `SOL Price: $${solUsdPrice.toFixed(2)} | Prices update automatically`;
+            }
+        }
+
+        function startPriceUpdates() {
+            fetchSolPrice();
+            priceUpdateInterval = setInterval(fetchSolPrice, 60000); // Update every minute
+        }
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', startPriceUpdates);
+    </script>
     <style>
         * { box-sizing: border-box; }
         body { background: #0a0a0a; color: #e5e5e5; font-family: 'Public Sans', sans-serif; }
@@ -650,9 +711,16 @@
             <div class="text-center mb-16">
                 <div class="text-xs font-mono text-[#00ff9d] mb-3">BACK THIS PROJECT</div>
                 <h2 class="font-display text-4xl font-bold mb-4">Choose Your Tier</h2>
-                <p class="text-[#888] max-w-xl mx-auto">
+                <p class="text-[#888] max-w-xl mx-auto mb-4">
                     From supporter to co-owner. Every tier gets you closer to the equity.
                 </p>
+                <div id="sol-price-indicator" class="text-xs text-[#9945FF] font-mono mb-4">
+                    SOL Price: Loading... | Prices update automatically
+                </div>
+                <div class="text-xs text-[#666] max-w-xl mx-auto">
+                    <span class="text-[#00ff9d]">💡 Dynamic Pricing:</span> Tier 3 is always $300 USD, Tier 4 is always $500 USD. 
+                    SOL amounts update in real-time based on current exchange rates. Your USD value stays constant.
+                </div>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -689,8 +757,13 @@
                 <div class="bg-[#111] border-2 border-[#00ff9d]/40 rounded-2xl p-6 glow-accent relative">
                     <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#00ff9d] text-black text-xs font-bold px-4 py-1 rounded-full">MOST POPULAR</div>
                     <div class="text-xs font-mono text-[#00ff9d] mb-2">TIER 3 — NFT</div>
-                    <div class="font-display text-3xl font-bold mb-1">0.5 SOL</div>
-                    <div class="text-sm text-[#888] mb-6">Dev Edition</div>
+                    <div class="font-display text-3xl font-bold mb-1">
+                        <span id="tier3-sol" class="text-[#00ff9d]">0.5000</span> SOL
+                    </div>
+                    <div class="text-sm text-[#888] mb-1">
+                        <span id="tier3-usd" class="text-[#00ff9d]">$300.00</span> USD Value
+                    </div>
+                    <div class="text-xs text-[#666] mb-6">Dev Edition</div>
                     <ul class="space-y-2 text-sm text-[#ccc] mb-8">
                         <li class="flex items-center gap-2"><span class="text-[#00ff9d]">★</span> NFT share certificate</li>
                         <li class="flex items-center gap-2"><span class="text-[#00ff9d]">★</span> Lifetime dividend rights</li>
@@ -706,8 +779,13 @@
                 <div class="bg-[#111] border border-[#9945FF]/30 rounded-2xl p-6 glow-solana relative">
                     <div class="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#9945FF] text-white text-xs font-bold px-4 py-1 rounded-full">FOUNDER</div>
                     <div class="text-xs font-mono text-[#9945FF] mb-2">TIER 4 — NFT</div>
-                    <div class="font-display text-3xl font-bold mb-1">2 SOL</div>
-                    <div class="text-sm text-[#888] mb-6">Founder's Circle</div>
+                    <div class="font-display text-3xl font-bold mb-1">
+                        <span id="tier4-sol" class="text-[#9945FF]">3.3333</span> SOL
+                    </div>
+                    <div class="text-sm text-[#888] mb-1">
+                        <span id="tier4-usd" class="text-[#9945FF]">$500.00</span> USD Value
+                    </div>
+                    <div class="text-xs text-[#666] mb-6">Founder's Circle</div>
                     <ul class="space-y-2 text-sm text-[#ccc] mb-8">
                         <li class="flex items-center gap-2"><span class="text-[#9945FF]">★</span> 3x Dev Edition NFTs</li>
                         <li class="flex items-center gap-2"><span class="text-[#9945FF]">★</span> Advisory role</li>
