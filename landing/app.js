@@ -70,7 +70,7 @@ function loadDemoComponent() {
 
     const demoHTML = `
         <bzr-dial-menu demo>
-            <bzr-item label="Home" icon="/icons/home.svg"></bzr-item>
+            <bzr-item label="Home" icon="/icons/home.svg" href="#demo"></bzr-item>
             <bzr-item label="Music" icon="/icons/music.svg" data-audio="/media/makeufamo.us.mp3" data-autoplay></bzr-item>
             <bzr-item label="Video" icon="/icons/video.svg" data-video="/media/paperchasers2.mp4"></bzr-item>
             <bzr-item label="Gallery" icon="/icons/gallery.svg" data-image="/media/illienfront.png"></bzr-item>
@@ -85,10 +85,18 @@ function loadDemoComponent() {
     const script = document.createElement('script');
     script.src = '/demo/bzr-dial-menu.js';
     script.onload = () => {
-        // Only insert DOM after custom element is defined
-        if (heroDemo) heroDemo.innerHTML = demoHTML;
-        if (fullDemo) fullDemo.innerHTML = demoHTML;
+        // Wait for BOTH custom elements to be defined before injecting DOM.
+        // This guarantees connectedCallback fires with slotted children ready
+        // and icons resolve immediately on render.
+        Promise.all([
+            customElements.whenDefined('bzr-dial-menu'),
+            customElements.whenDefined('bzr-item')
+        ]).then(() => {
+            if (heroDemo) heroDemo.innerHTML = demoHTML;
+            if (fullDemo) fullDemo.innerHTML = demoHTML;
+        });
     };
+    script.onerror = () => console.error('[bzr-dial-ui] Failed to load /demo/bzr-dial-menu.js');
     document.body.appendChild(script);
 }
 

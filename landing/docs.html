@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>bzr-dial.ui — Documentation v1.0.0-mvp</title>
+    <meta name="description" content="Comprehensive usage documentation for bzr-dial-menu v1.0.0-mvp — physics-based radial dial menu web component by Web Works Systems.">
+    <link href="https://fonts.googleapis.com" rel="preconnect" />
+    <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect" />
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;700&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2bee8c",
+                        "primary-dark": "#1fa863",
+                        "secondary": "#4A7040",
+                        "background-light": "#f5f5f5",
+                        "background-dark": "#0a0a0a",
+                        "surface-dark": "#1c2721",
+                        "surface-border": "#283930",
+                        "border-tactical": "#d1d5db",
+                        "text-main": "#141513",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "display-light": ["Public Sans", "sans-serif"],
+                        "mono": ["JetBrains Mono", "ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "monospace"],
+                    },
+                    backgroundImage: {
+                        'grid-pattern-dark': "linear-gradient(to right, #283930 1px, transparent 1px), linear-gradient(to bottom, #283930 1px, transparent 1px)",
+                        'grid-pattern-light': "linear-gradient(to right, #e5e7eb 1px, transparent 1px), linear-gradient(to bottom, #e5e7eb 1px, transparent 1px)",
+                    },
+                    borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+                },
+            },
+        }
+    </script>
+    <style>
+        body { font-family: "Space Grotesk", sans-serif; transition: background-color 0.3s ease, color 0.3s ease; }
+        .grid-bg { background-size: 40px 40px; mask-image: linear-gradient(to bottom, black 40%, transparent 100%); -webkit-mask-image: linear-gradient(to bottom, black 40%, transparent 100%); }
+        .scan-line { position: absolute; top: 0; left: 0; width: 100%; height: 2px; background-color: rgba(43, 238, 140, 0.1); animation: scan 8s linear infinite; pointer-events: none; z-index: 10; }
+        .light .scan-line { display: none; }
+        @keyframes scan { 0% { top: 0%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        .tactical-border { position: relative; }
+        .tactical-border::before, .tactical-border::after { content: ''; position: absolute; width: 8px; height: 8px; border-style: solid; transition: all 0.3s ease; }
+        .dark .tactical-border::before, .dark .tactical-border::after { border-color: #2bee8c; }
+        .light .tactical-border::before, .light .tactical-border::after { border-color: #4b7141; }
+        .tactical-border::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; border-top-left-radius: 4px; }
+        .tactical-border::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; border-bottom-right-radius: 4px; }
+        pre { scrollbar-width: thin; scrollbar-color: #2bee8c #111; }
+        pre::-webkit-scrollbar { height: 6px; }
+        pre::-webkit-scrollbar-track { background: #111; }
+        pre::-webkit-scrollbar-thumb { background: #2bee8c44; border-radius: 3px; }
+        .doc-nav::-webkit-scrollbar { width: 4px; }
+        .doc-nav::-webkit-scrollbar-track { background: transparent; }
+        .doc-nav::-webkit-scrollbar-thumb { background: #2bee8c33; border-radius: 2px; }
+        .coming-soon-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; background: rgba(245, 158, 11, 0.1); border: 1px solid rgba(245, 158, 11, 0.3); color: #f59e0b; }
+        .impl-badge { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border-radius: 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; background: rgba(43, 238, 140, 0.1); border: 1px solid rgba(43, 238, 140, 0.3); color: #2bee8c; }
+        .coming-soon-card { position: relative; overflow: hidden; }
+        .coming-soon-card::after { content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: repeating-linear-gradient(135deg, transparent, transparent 8px, rgba(245, 158, 11, 0.03) 8px, rgba(245, 158, 11, 0.03) 16px); pointer-events: none; }
+        .coming-soon-card > * { position: relative; z-index: 1; }
+        .anchor-offset { scroll-margin-top: 90px; }
+    </style>
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+</head>
+<body class="bg-background-light dark:bg-background-dark text-slate-900 dark:text-white overflow-x-hidden min-h-screen flex flex-col font-display-light dark:font-display">
+    <div class="fixed inset-0 pointer-events-none z-0 opacity-20 dark:bg-grid-pattern-dark bg-grid-pattern-light grid-bg"></div>
+    <div class="scan-line"></div>
+
+    <div class="relative flex flex-col w-full z-10">
+
+        <!-- ===== HEADER ===== -->
+        <header class="sticky top-0 z-50 w-full border-b border-surface-border dark:border-surface-border border-border-tactical bg-white/80 dark:bg-background-dark/95 backdrop-blur-sm px-6 py-4">
+            <div class="max-w-7xl mx-auto flex items-center justify-between">
+                <a href="/" class="flex items-center gap-3 text-primary group cursor-pointer">
+                    <div class="relative size-8 flex items-center justify-center border border-primary/30 rounded bg-primary/10 transition-colors group-hover:bg-primary/20">
+                        <span class="material-symbols-outlined text-xl">center_focus_strong</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <h2 class="dark:text-white text-text-main text-lg font-bold leading-none tracking-tight uppercase">bzr-dial<span class="text-primary">.ui</span></h2>
+                        <span class="text-[10px] text-gray-400 tracking-[0.2em] uppercase leading-none mt-1">Web Works Systems</span>
+                    </div>
+                </a>
+                <nav class="hidden md:flex items-center gap-8">
+                    <a class="text-sm font-medium text-primary hover:text-primary-dark transition-colors tracking-wide uppercase font-bold" href="/docs.html">Docs</a>
+                    <a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary transition-colors tracking-wide uppercase" href="/#features">Features</a>
+                    <a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary transition-colors tracking-wide uppercase" href="/#demo">Demo</a>
+                    <a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary transition-colors tracking-wide uppercase" href="/#pricing">Pricing</a>
+                    <a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary transition-colors tracking-wide uppercase" href="/campaign.html">Campaign</a>
+                    <a class="text-sm font-medium text-gray-600 dark:text-gray-300 hover:text-primary transition-colors tracking-wide uppercase flex items-center gap-1" href="https://github.com/MeRc-kHz/czarui" target="_blank" rel="noopener">
+                        <span class="material-symbols-outlined text-base">code</span>
+                        GitHub
+                    </a>
+                </nav>
+                <div class="flex items-center gap-3">
+                    <a href="/" class="hidden sm:flex items-center justify-center h-10 px-5 bg-primary hover:bg-primary-dark transition-all text-background-dark text-sm font-bold uppercase tracking-wider rounded">
+                        <span class="material-symbols-outlined text-base mr-1.5">arrow_back</span>
+                        Back to Site
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- ===== DOC LAYOUT ===== -->
+        <div class="flex w-full max-w-7xl mx-auto gap-0 flex-grow">
+
+            <!-- ===== SIDEBAR NAV ===== -->
+            <aside class="hidden lg:block w-64 flex-shrink-0 border-r border-surface-border dark:border-surface-border border-border-tactical sticky top-[73px] self-start max-h-[calc(100vh-73px)] overflow-y-auto doc-nav">
+                <div class="p-6 space-y-1">
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-primary mb-3">Documentation</div>
+                    <a href="#quick-start" class="block text-sm text-gray-400 hover:text-primary transition-colors py-1.5">Quick Start</a>
+                    <a href="#installation" class="block text-sm text-gray-400 hover:text-primary transition-colors py-1.5">Installation</a>
+                    <a href="#component-attributes" class="block text-sm text-gray-400 hover:text-primary transition-colors py-1.5">Component Attributes</a>
+                    <a href="#item-attributes" class="block text-sm text-gray-400 hover:text-primary transition-colors py-1.5">Item Attributes</a>
+                    <a href="#inline-content" class="block text-sm text-gray-400 hover:text-primary transition-colors py-1.5">Inline Content</a>
+                    <a href="#css-properties" class="block text-sm text-gray-400 hover:text-primary transition-colors py-1.5">CSS Properties</a>
+                    <a href="#events" class="block text-sm text-gray-400 hover:text-primary transition-colors py-1.5">Events</a>
+                    <a href="#javascript-api" class="block text-sm text-gray-400 hover:text-primary transition-colors py-1.5">JavaScript API</a>
+                    <a href="#interactions" class="block text-sm text-gray-400 hover:text-primary transition-colors py-1.5">Interactions</a>
+                    <a href="#examples" class="block text-sm text-gray-400 hover:text-primary transition-colors py-1.5">Examples</a>
+                    <div class="pt-4 mt-4 border-t border-surface-border"></div>
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-3">Roadmap</div>
+                    <a href="#coming-soon" class="block text-sm text-gray-400 hover:text-amber-500 transition-colors py-1.5">Coming Soon</a>
+                    <div class="pt-4 mt-4 border-t border-surface-border"></div>
+                    <div class="text-[10px] font-bold uppercase tracking-widest text-gray-500 mb-3">Reference</div>
+                    <a href="#browser-support" class="block text-sm text-gray-400 hover:text-primary transition-colors py-1.5">Browser Support</a>
+                    <a href="#troubleshooting" class="block text-sm text-gray-400 hover:text-primary transition-colors py-1.5">Troubleshooting</a>
+                    <a href="#changelog" class="block text-sm text-gray-400 hover:text-primary transition-colors py-1.5">Changelog</a>
+                </div>
+            </aside>
+
+            <!-- ===== MAIN CONTENT ===== -->
+            <main class="flex-1 min-w-0 px-6 md:px-10 py-12">
+
+                <!-- Doc Header -->
+                <div class="mb-12">
+                    <div class="flex items-center gap-3 mb-4">
+                        <span class="impl-badge"><span class="material-symbols-outlined text-xs">check_circle</span> v1.0.0-mvp</span>
+                        <span class="text-[10px] text-gray-500 tracking-widest uppercase">Last Updated: June 2026</span>
+                    </div>
+                    <h1 class="dark:text-white text-text-main text-4xl md:text-5xl font-black tracking-tight uppercase mb-3">
+                        bzr-dial<span class="text-primary">.ui</span> Docs
+                    </h1>
+                    <p class="text-gray-500 dark:text-gray-400 text-lg max-w-2xl">
+                        A physics-based radial dial menu web component. Zero dependencies. 60 FPS. Shadow DOM encapsulated. Built by Web Works Systems.
+                    </p>
+                </div>
+
+                <!-- ===== QUICK START ===== -->
+                <section id="quick-start" class="mb-16 anchor-offset">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">rocket_launch</span>
+                        Quick Start
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="tactical-border bg-surface-dark/50 dark:bg-surface-dark/50 border border-surface-border dark:border-surface-border rounded-lg p-6">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Step 1</span>
+                                <span class="text-sm text-gray-400">Include the component script</span>
+                            </div>
+                            <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>&lt;script src="/demo/bzr-dial-menu.js"&gt;&lt;/script&gt;</code></pre>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 dark:bg-surface-dark/50 border border-surface-border dark:border-surface-border rounded-lg p-6">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Step 2</span>
+                                <span class="text-sm text-gray-400">Add the component to your HTML</span>
+                            </div>
+                            <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>&lt;bzr-dial-menu&gt;
+    &lt;bzr-item label="Home" icon="/icons/home.svg" href="#home"&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="Settings" icon="/icons/settings.svg" href="#settings"&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="Profile" icon="/icons/profile.svg" href="#profile"&gt;&lt;/bzr-item&gt;
+&lt;/bzr-dial-menu&gt;</code></pre>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 dark:bg-surface-dark/50 border border-surface-border dark:border-surface-border rounded-lg p-6">
+                            <div class="flex items-center gap-2 mb-3">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-primary">Step 3</span>
+                                <span class="text-sm text-gray-400">That's it. The dial auto-mounts to the viewport edge.</span>
+                            </div>
+                            <p class="text-sm text-gray-400">No build step. No npm install. No framework dependency. The component registers two custom elements: <code class="text-primary font-mono text-xs px-1.5 py-0.5 bg-primary/10 rounded">&lt;bzr-dial-menu&gt;</code> and <code class="text-primary font-mono text-xs px-1.5 py-0.5 bg-primary/10 rounded">&lt;bzr-item&gt;</code>.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== INSTALLATION ===== -->
+                <section id="installation" class="mb-16 anchor-offset">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">download</span>
+                        Installation
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3">CDN (Demo / Unlicensed)</h3>
+                            <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>&lt;script src="https://czarui.game4real.us/demo/bzr-dial-menu.js"&gt;&lt;/script&gt;</code></pre>
+                            <p class="text-xs text-gray-500 mt-3">Includes a visible "UNLICENSED" watermark badge. For evaluation only.</p>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3">Licensed Download</h3>
+                            <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>&lt;script src="/component/bzr-dial-menu.js"&gt;&lt;/script&gt;</code></pre>
+                            <p class="text-xs text-gray-500 mt-3">Requires a valid license key. Purchase at <a href="/#pricing" class="text-primary underline">bzzrr.link</a>.</p>
+                        </div>
+                    </div>
+                    <div class="mt-4 tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                        <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3">Self-Hosted</h3>
+                        <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code># Download and serve from your own domain
+&lt;script src="/your-path/bzr-dial-menu.js"&gt;&lt;/script&gt;
+
+# Or use as an ES module (future — see Coming Soon section)</code></pre>
+                    </div>
+                </section>
+
+                <!-- ===== COMPONENT ATTRIBUTES ===== -->
+                <section id="component-attributes" class="mb-16 anchor-offset">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">tune</span>
+                        &lt;bzr-dial-menu&gt; Attributes
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm border border-surface-border rounded-lg overflow-hidden">
+                            <thead>
+                                <tr class="bg-surface-dark border-b border-surface-border">
+                                    <th class="text-left px-4 py-3 font-bold uppercase tracking-wide text-primary text-xs">Attribute</th>
+                                    <th class="text-left px-4 py-3 font-bold uppercase tracking-wide text-primary text-xs">Type</th>
+                                    <th class="text-left px-4 py-3 font-bold uppercase tracking-wide text-primary text-xs">Default</th>
+                                    <th class="text-left px-4 py-3 font-bold uppercase tracking-wide text-primary text-xs">Status</th>
+                                    <th class="text-left px-4 py-3 font-bold uppercase tracking-wide text-primary text-xs">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-surface-border">
+                                <tr class="hover:bg-surface-dark/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono text-primary">radius</td>
+                                    <td class="px-4 py-3 text-gray-400">Number</td>
+                                    <td class="px-4 py-3 text-gray-400">120</td>
+                                    <td class="px-4 py-3"><span class="impl-badge">Active</span></td>
+                                    <td class="px-4 py-3 text-gray-300">Radius of the dial circle in pixels</td>
+                                </tr>
+                                <tr class="hover:bg-surface-dark/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono text-primary">justify</td>
+                                    <td class="px-4 py-3 text-gray-400">String</td>
+                                    <td class="px-4 py-3 text-gray-400">right</td>
+                                    <td class="px-4 py-3"><span class="impl-badge">Active</span></td>
+                                    <td class="px-4 py-3 text-gray-300">FAB position: <code class="font-mono text-xs text-amber-400">left</code> or <code class="font-mono text-xs text-amber-400">right</code></td>
+                                </tr>
+                                <tr class="hover:bg-surface-dark/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono text-primary">top</td>
+                                    <td class="px-4 py-3 text-gray-400">String</td>
+                                    <td class="px-4 py-3 text-gray-400">50%</td>
+                                    <td class="px-4 py-3"><span class="impl-badge">Active</span></td>
+                                    <td class="px-4 py-3 text-gray-300">Vertical position of FAB (e.g. <code class="font-mono text-xs">200px</code>)</td>
+                                </tr>
+                                <tr class="hover:bg-surface-dark/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono text-primary">bottom</td>
+                                    <td class="px-4 py-3 text-gray-400">String</td>
+                                    <td class="px-4 py-3 text-gray-400">—</td>
+                                    <td class="px-4 py-3"><span class="impl-badge">Active</span></td>
+                                    <td class="px-4 py-3 text-gray-300">Bottom position override (mutually exclusive with top)</td>
+                                </tr>
+                                <tr class="hover:bg-surface-dark/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono text-primary">anchor</td>
+                                    <td class="px-4 py-3 text-gray-400">String</td>
+                                    <td class="px-4 py-3 text-gray-400">auto</td>
+                                    <td class="px-4 py-3"><span class="impl-badge">Active</span></td>
+                                    <td class="px-4 py-3 text-gray-300">Active slot anchor: <code class="font-mono text-xs">left</code>, <code class="font-mono text-xs">right</code>, <code class="font-mono text-xs">top</code>, <code class="font-mono text-xs">bottom</code>. Auto-derives from justify.</td>
+                                </tr>
+                                <tr class="hover:bg-surface-dark/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono text-primary">license</td>
+                                    <td class="px-4 py-3 text-gray-400">String</td>
+                                    <td class="px-4 py-3 text-gray-400">—</td>
+                                    <td class="px-4 py-3"><span class="impl-badge">Active</span></td>
+                                    <td class="px-4 py-3 text-gray-300">License key (format: <code class="font-mono text-xs">BZRD-XXXX-XXXX-XXXX-XXXX</code>). Removes watermark.</td>
+                                </tr>
+                                <tr class="hover:bg-surface-dark/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono text-primary">demo</td>
+                                    <td class="px-4 py-3 text-gray-400">Flag</td>
+                                    <td class="px-4 py-3 text-gray-400">—</td>
+                                    <td class="px-4 py-3"><span class="impl-badge">Active</span></td>
+                                    <td class="px-4 py-3 text-gray-300">Marks component as demo (used on landing page)</td>
+                                </tr>
+                                <tr class="hover:bg-surface-dark/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono text-amber-400">snap</td>
+                                    <td class="px-4 py-3 text-gray-400">String</td>
+                                    <td class="px-4 py-3 text-gray-400">auto</td>
+                                    <td class="px-4 py-3"><span class="coming-soon-badge">Planned</span></td>
+                                    <td class="px-4 py-3 text-gray-500">Observed but not yet handled. Currently auto-calculated as 2π/item count.</td>
+                                </tr>
+                                <tr class="hover:bg-surface-dark/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono text-amber-400">sensitivity</td>
+                                    <td class="px-4 py-3 text-gray-400">String</td>
+                                    <td class="px-4 py-3 text-gray-400">—</td>
+                                    <td class="px-4 py-3"><span class="coming-soon-badge">Planned</span></td>
+                                    <td class="px-4 py-3 text-gray-500">Drag sensitivity control. Reserved for future use.</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ===== ITEM ATTRIBUTES ===== -->
+                <section id="item-attributes" class="mb-16 anchor-offset">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">widgets</span>
+                        &lt;bzr-item&gt; Attributes
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm border border-surface-border rounded-lg overflow-hidden">
+                            <thead>
+                                <tr class="bg-surface-dark border-b border-surface-border">
+                                    <th class="text-left px-4 py-3 font-bold uppercase tracking-wide text-primary text-xs">Attribute</th>
+                                    <th class="text-left px-4 py-3 font-bold uppercase tracking-wide text-primary text-xs">Type</th>
+                                    <th class="text-left px-4 py-3 font-bold uppercase tracking-wide text-primary text-xs">Required</th>
+                                    <th class="text-left px-4 py-3 font-bold uppercase tracking-wide text-primary text-xs">Status</th>
+                                    <th class="text-left px-4 py-3 font-bold uppercase tracking-wide text-primary text-xs">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-surface-border">
+                                <tr class="hover:bg-surface-dark/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono text-primary">label</td>
+                                    <td class="px-4 py-3 text-gray-400">String</td>
+                                    <td class="px-4 py-3 text-red-400">Yes</td>
+                                    <td class="px-4 py-3"><span class="impl-badge">Active</span></td>
+                                    <td class="px-4 py-3 text-gray-300">Display name shown when item is active</td>
+                                </tr>
+                                <tr class="hover:bg-surface-dark/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono text-primary">icon</td>
+                                    <td class="px-4 py-3 text-gray-400">URL</td>
+                                    <td class="px-4 py-3 text-gray-500">No</td>
+                                    <td class="px-4 py-3"><span class="impl-badge">Active</span></td>
+                                    <td class="px-4 py-3 text-gray-300">Path or URL to icon image (SVG, PNG). Shows placeholder if absent.</td>
+                                </tr>
+                                <tr class="hover:bg-surface-dark/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono text-primary">href</td>
+                                    <td class="px-4 py-3 text-gray-400">URL</td>
+                                    <td class="px-4 py-3 text-gray-500">No</td>
+                                    <td class="px-4 py-3"><span class="impl-badge">Active</span></td>
+                                    <td class="px-4 py-3 text-gray-300">Navigation URL — triggered when active item is clicked</td>
+                                </tr>
+                                <tr class="hover:bg-surface-dark/30 transition-colors">
+                                    <td class="px-4 py-3 font-mono text-primary">active</td>
+                                    <td class="px-4 py-3 text-gray-400">Flag</td>
+                                    <td class="px-4 py-3 text-gray-500">No</td>
+                                    <td class="px-4 py-3"><span class="impl-badge">Active</span></td>
+                                    <td class="px-4 py-3 text-gray-300">Set automatically by the dial when an item reaches the active slot</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <!-- ===== INLINE CONTENT ===== -->
+                <section id="inline-content" class="mb-16 anchor-offset">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">perm_media</span>
+                        Inline Content Attributes
+                    </h2>
+                    <p class="text-sm text-gray-400 mb-6">Display rich media and interactive content in a modal overlay instead of navigating away. Content attributes take priority over <code class="font-mono text-xs text-primary">href</code>.</p>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <!-- Audio -->
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary">music_note</span>
+                                    <code class="font-mono text-sm text-primary">data-audio</code>
+                                </div>
+                                <span class="impl-badge">Active</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">Audio player with WebAudio visualizer (80 radial bars, FFT 256) and custom media controls.</p>
+                            <pre class="bg-black/40 rounded-lg p-3 overflow-x-auto text-xs text-gray-300 font-mono"><code>&lt;bzr-item label="Podcast" icon="music.svg"
+    data-audio="episode.mp3"
+    data-autoplay&gt;
+&lt;/bzr-item&gt;</code></pre>
+                        </div>
+                        <!-- Video -->
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary">videocam</span>
+                                    <code class="font-mono text-sm text-primary">data-video</code>
+                                </div>
+                                <span class="impl-badge">Active</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">Video player with canvas frame-copy render loop and aspect-ratio-aware fitting.</p>
+                            <pre class="bg-black/40 rounded-lg p-3 overflow-x-auto text-xs text-gray-300 font-mono"><code>&lt;bzr-item label="Tutorial" icon="video.svg"
+    data-video="tutorial.mp4"&gt;
+&lt;/bzr-item&gt;</code></pre>
+                        </div>
+                        <!-- Image -->
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary">image</span>
+                                    <code class="font-mono text-sm text-primary">data-image</code>
+                                </div>
+                                <span class="impl-badge">Active</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">Image viewer with contain-fit and max-height 70vh.</p>
+                            <pre class="bg-black/40 rounded-lg p-3 overflow-x-auto text-xs text-gray-300 font-mono"><code>&lt;bzr-item label="Gallery" icon="gallery.svg"
+    data-image="photo.png"&gt;
+&lt;/bzr-item&gt;</code></pre>
+                        </div>
+                        <!-- Email -->
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary">mail</span>
+                                    <code class="font-mono text-sm text-primary">data-email</code>
+                                </div>
+                                <span class="impl-badge">Active</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">Contact form (to/subject/message) that opens a <code class="font-mono text-xs">mailto:</code> link on submit.</p>
+                            <pre class="bg-black/40 rounded-lg p-3 overflow-x-auto text-xs text-gray-300 font-mono"><code>&lt;bzr-item label="Contact" icon="email.svg"
+    data-email="hello@example.com"&gt;
+&lt;/bzr-item&gt;</code></pre>
+                        </div>
+                        <!-- Phone -->
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary">call</span>
+                                    <code class="font-mono text-sm text-primary">data-phone</code>
+                                </div>
+                                <span class="impl-badge">Active</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">Phone card with large number display and <code class="font-mono text-xs">tel:</code> call button.</p>
+                            <pre class="bg-black/40 rounded-lg p-3 overflow-x-auto text-xs text-gray-300 font-mono"><code>&lt;bzr-item label="Call Us" icon="phone.svg"
+    data-phone="+1-555-123-4567"&gt;
+&lt;/bzr-item&gt;</code></pre>
+                        </div>
+                        <!-- Map -->
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary">map</span>
+                                    <code class="font-mono text-sm text-primary">data-map</code>
+                                </div>
+                                <span class="impl-badge">Active</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">OpenStreetMap embed via Leaflet + Nominatim geocoding. Lazily loads Leaflet CSS/JS.</p>
+                            <pre class="bg-black/40 rounded-lg p-3 overflow-x-auto text-xs text-gray-300 font-mono"><code>&lt;bzr-item label="Location" icon="map.svg"
+    data-map="Eiffel Tower, Paris"&gt;
+&lt;/bzr-item&gt;</code></pre>
+                        </div>
+                        <!-- Iframe -->
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6 md:col-span-2">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary">web</span>
+                                    <code class="font-mono text-sm text-primary">data-iframe</code>
+                                </div>
+                                <span class="impl-badge">Active</span>
+                            </div>
+                            <p class="text-xs text-gray-400 mb-3">Embed any external website in an iframe overlay.</p>
+                            <pre class="bg-black/40 rounded-lg p-3 overflow-x-auto text-xs text-gray-300 font-mono"><code>&lt;bzr-item label="Docs" icon="web.svg"
+    data-iframe="https://docs.example.com"&gt;
+&lt;/bzr-item&gt;</code></pre>
+                        </div>
+                        <!-- Autoplay flag -->
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6 md:col-span-2">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-primary">play_circle</span>
+                                    <code class="font-mono text-sm text-primary">data-autoplay</code>
+                                </div>
+                                <span class="impl-badge">Active</span>
+                            </div>
+                            <p class="text-xs text-gray-400">Optional flag — auto-plays audio/video when the content modal opens. Works with <code class="font-mono text-xs text-primary">data-audio</code> and <code class="font-mono text-xs text-primary">data-video</code> only.</p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== CSS PROPERTIES ===== -->
+                <section id="css-properties" class="mb-16 anchor-offset">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">palette</span>
+                        CSS Custom Properties
+                    </h2>
+                    <p class="text-sm text-gray-400 mb-6">Override these CSS variables on the <code class="font-mono text-xs text-primary">bzr-dial-menu</code> host element to customize the theme.</p>
+                    <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                        <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>bzr-dial-menu {
+    --primary: #2bee8c;          /* Primary color: active items, glow, FAB */
+    --bg: #111;                   /* Background color */
+    --text: #fff;                 /* Text color */
+    --trigger-size: 80px;         /* FAB button diameter */
+    --trigger-inset: 20px;        /* FAB inset from viewport edge */
+}</code></pre>
+                    </div>
+                    <div class="mt-4 tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                        <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3">Custom Theme Example</h3>
+                        <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>&lt;style&gt;
+    #custom-dial {
+        --primary: #ff6b6b;   /* Red theme */
+        --bg: #2c3e50;
+        --text: #ecf0f1;
+        --trigger-size: 60px;  /* Smaller FAB */
+    }
+&lt;/style&gt;
+
+&lt;bzr-dial-menu id="custom-dial" radius="150" justify="right"&gt;
+    &lt;div slot="trigger-content" style="font-size:28px; font-weight:bold;"&gt;⚡&lt;/div&gt;
+    &lt;bzr-item label="Dashboard" icon="dashboard.svg" href="/dashboard"&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="Analytics" icon="chart.svg" href="/analytics"&gt;&lt;/bzr-item&gt;
+&lt;/bzr-dial-menu&gt;</code></pre>
+                    </div>
+                </section>
+
+                <!-- ===== EVENTS ===== -->
+                <section id="events" class="mb-16 anchor-offset">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">bolt</span>
+                        Events
+                    </h2>
+                    <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                        <div class="flex items-center gap-2 mb-4">
+                            <code class="font-mono text-sm text-primary">bzr-change</code>
+                            <span class="impl-badge">Active</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-4">Fired when the active item changes (an item rotates into the active slot).</p>
+                        <div class="mb-4">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-gray-500">Event Detail</span>
+                            <pre class="bg-black/40 rounded-lg p-3 mt-2 overflow-x-auto text-xs text-gray-300 font-mono"><code>{
+    index: Number,      // Index of the active item (0-based)
+    item: HTMLElement    // The bzr-item element
+}</code></pre>
+                        </div>
+                        <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>const dial = document.querySelector('bzr-dial-menu');
+
+dial.addEventListener('bzr-change', (event) => {
+    const { index, item } = event.detail;
+    const label = item.getAttribute('label');
+    console.log(`Active item: ${label} (index: ${index})`);
+
+    // Track analytics
+    analytics.track('dial_item_selected', { item: label });
+});</code></pre>
+                    </div>
+                </section>
+
+                <!-- ===== JAVASCRIPT API ===== -->
+                <section id="javascript-api" class="mb-16 anchor-offset">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">code</span>
+                        JavaScript API
+                    </h2>
+
+                    <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3">Properties</h3>
+                    <div class="overflow-x-auto mb-6">
+                        <table class="w-full text-sm border border-surface-border rounded-lg overflow-hidden">
+                            <thead>
+                                <tr class="bg-surface-dark border-b border-surface-border">
+                                    <th class="text-left px-4 py-3 font-bold uppercase tracking-wide text-primary text-xs">Property</th>
+                                    <th class="text-left px-4 py-3 font-bold uppercase tracking-wide text-primary text-xs">Type</th>
+                                    <th class="text-left px-4 py-3 font-bold uppercase tracking-wide text-primary text-xs">Description</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-surface-border">
+                                <tr class="hover:bg-surface-dark/30"><td class="px-4 py-3 font-mono text-primary">dial.isOpen</td><td class="px-4 py-3 text-gray-400">Boolean</td><td class="px-4 py-3 text-gray-300">Is the dial currently open?</td></tr>
+                                <tr class="hover:bg-surface-dark/30"><td class="px-4 py-3 font-mono text-primary">dial.rotation</td><td class="px-4 py-3 text-gray-400">Number</td><td class="px-4 py-3 text-gray-300">Current rotation in radians</td></tr>
+                                <tr class="hover:bg-surface-dark/30"><td class="px-4 py-3 font-mono text-primary">dial.activeIndex</td><td class="px-4 py-3 text-gray-400">Number</td><td class="px-4 py-3 text-gray-300">Index of active item (0-based)</td></tr>
+                                <tr class="hover:bg-surface-dark/30"><td class="px-4 py-3 font-mono text-primary">dial.items</td><td class="px-4 py-3 text-gray-400">Array</td><td class="px-4 py-3 text-gray-300">Array of all slotted bzr-item elements</td></tr>
+                                <tr class="hover:bg-surface-dark/30"><td class="px-4 py-3 font-mono text-primary">dial.radius</td><td class="px-4 py-3 text-gray-400">Number</td><td class="px-4 py-3 text-gray-300">Dial radius in pixels</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3">Methods</h3>
+                    <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                        <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>const dial = document.querySelector('bzr-dial-menu');
+
+// Toggle open/close
+dial.toggle();
+
+// Programmatically open/close
+dial.isOpen = true;   // Open
+dial.isOpen = false;  // Close</code></pre>
+                    </div>
+
+                    <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3 mt-6">Dynamic Item Management</h3>
+                    <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                        <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>// Add items dynamically
+const newItem = document.createElement('bzr-item');
+newItem.setAttribute('label', 'New Item');
+newItem.setAttribute('icon', 'new-icon.svg');
+newItem.setAttribute('href', '#new');
+dial.appendChild(newItem);
+
+// Remove items
+const items = dial.querySelectorAll('bzr-item');
+items[2].remove(); // Remove third item
+
+// Update item attributes
+const item = dial.querySelector('bzr-item[label="Home"]');
+item.setAttribute('label', 'Dashboard');
+item.setAttribute('icon', 'dashboard.svg');</code></pre>
+                        <p class="text-xs text-gray-500 mt-3">The <code class="font-mono text-xs text-primary">slotchange</code> event auto-triggers <code class="font-mono text-xs text-primary">updateItems()</code> when children change.</p>
+                    </div>
+
+                    <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3 mt-6">Custom Trigger Content</h3>
+                    <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                        <p class="text-sm text-gray-400 mb-3">Use the <code class="font-mono text-xs text-primary">trigger-content</code> slot to customize the FAB button:</p>
+                        <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>&lt;bzr-dial-menu&gt;
+    &lt;!-- Custom trigger --&gt;
+    &lt;div slot="trigger-content" style="font-size:24px;"&gt;☰&lt;/div&gt;
+
+    &lt;!-- Items --&gt;
+    &lt;bzr-item label="Home" icon="home.svg"&gt;&lt;/bzr-item&gt;
+&lt;/bzr-dial-menu&gt;</code></pre>
+                    </div>
+                </section>
+
+                <!-- ===== INTERACTIONS ===== -->
+                <section id="interactions" class="mb-16 anchor-offset">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">touch_app</span>
+                        Interaction Guide
+                    </h2>
+                    <div class="grid md:grid-cols-2 gap-4">
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="material-symbols-outlined text-primary text-lg">click</span>
+                                <span class="font-bold text-sm">Open / Close</span>
+                            </div>
+                            <p class="text-xs text-gray-400">Single click the FAB button to toggle the dial open/closed.</p>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="material-symbols-outlined text-primary text-lg">rotate_right</span>
+                                <span class="font-bold text-sm">Rotate Dial</span>
+                            </div>
+                            <p class="text-xs text-gray-400">Drag anywhere on the overlay — outer ring, icons, or inner ring area. Rotation pivots around the FAB center.</p>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="material-symbols-outlined text-primary text-lg">swap_vert</span>
+                                <span class="font-bold text-sm">Quick Navigate</span>
+                            </div>
+                            <p class="text-xs text-gray-400">Swipe up/down on any icon to snap to the next/previous item. 10px threshold locks the direction.</p>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="material-symbols-outlined text-primary text-lg">touch_app</span>
+                                <span class="font-bold text-sm">Select Item</span>
+                            </div>
+                            <p class="text-xs text-gray-400">Click the active (highlighted) item to trigger its action — navigate to <code class="font-mono text-xs">href</code> or open inline content.</p>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="material-symbols-outlined text-primary text-lg">drag_indicator</span>
+                                <span class="font-bold text-sm">Slide Mode</span>
+                            </div>
+                            <p class="text-xs text-gray-400">Double-click the FAB to enable slide mode. Drag vertically to reposition the FAB along the viewport edge. Click backdrop to exit.</p>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <div class="flex items-center gap-2 mb-2">
+                                <span class="material-symbols-outlined text-primary text-lg">vibration</span>
+                                <span class="font-bold text-sm">Haptic Feedback</span>
+                            </div>
+                            <p class="text-xs text-gray-400">Vibration API feedback on snap, slide-mode toggle, and item activation (mobile only).</p>
+                        </div>
+                    </div>
+
+                    <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3 mt-6">Physics Model</h3>
+                    <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                            <div>
+                                <div class="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Friction</div>
+                                <div class="font-mono text-primary">0.985</div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Spring</div>
+                                <div class="font-mono text-primary">0.1</div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Snap</div>
+                                <div class="font-mono text-primary">2π / N</div>
+                            </div>
+                            <div>
+                                <div class="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Target Lerp</div>
+                                <div class="font-mono text-primary">0.15</div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-4">Inertial scrolling with velocity decay, spring-snapping to slot positions, and a target-rotation lerp for programmatic navigation. The rAF loop runs continuously at 60 FPS.</p>
+                    </div>
+                </section>
+
+                <!-- ===== EXAMPLES ===== -->
+                <section id="examples" class="mb-16 anchor-offset">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">collections</span>
+                        Examples
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3">Navigation Menu</h3>
+                            <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>&lt;bzr-dial-menu justify="right"&gt;
+    &lt;div slot="trigger-content"&gt;☰&lt;/div&gt;
+    &lt;bzr-item label="Home" icon="home.svg" href="/"&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="About" icon="info.svg" href="/about"&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="Services" icon="services.svg" href="/services"&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="Contact" icon="contact.svg" href="/contact"&gt;&lt;/bzr-item&gt;
+&lt;/bzr-dial-menu&gt;</code></pre>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3">App Actions with Event Handling</h3>
+                            <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>&lt;bzr-dial-menu radius="150" justify="left"&gt;
+    &lt;div slot="trigger-content"&gt;+&lt;/div&gt;
+    &lt;bzr-item label="New Post" icon="edit.svg"&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="Upload Photo" icon="camera.svg"&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="Create Event" icon="calendar.svg"&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="Start Chat" icon="message.svg"&gt;&lt;/bzr-item&gt;
+&lt;/bzr-dial-menu&gt;
+
+&lt;script&gt;
+    const dial = document.querySelector('bzr-dial-menu');
+    dial.addEventListener('bzr-change', (e) => {
+        const label = e.detail.item.getAttribute('label');
+        switch(label) {
+            case 'New Post': openPostEditor(); break;
+            case 'Upload Photo': openPhotoUploader(); break;
+        }
+    });
+&lt;/script&gt;</code></pre>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3">Media Showcase</h3>
+                            <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>&lt;bzr-dial-menu justify="right" radius="140"&gt;
+    &lt;bzr-item label="Music" icon="music.svg"
+        data-audio="track.mp3" data-autoplay&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="Video" icon="video.svg"
+        data-video="demo.mp4"&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="Gallery" icon="image.svg"
+        data-image="photo.jpg"&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="Map" icon="map.svg"
+        data-map="350 Fifth Avenue, New York"&gt;&lt;/bzr-item&gt;
+&lt;/bzr-dial-menu&gt;</code></pre>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3">Using Iconify Icons</h3>
+                            <pre class="bg-black/40 rounded-lg p-4 overflow-x-auto text-sm text-gray-300 font-mono"><code>&lt;bzr-dial-menu&gt;
+    &lt;bzr-item label="Home"
+        icon="https://api.iconify.design/mdi:home.svg?color=%23ffffff"&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="Search"
+        icon="https://api.iconify.design/mdi:magnify.svg?color=%23ffffff"&gt;&lt;/bzr-item&gt;
+    &lt;bzr-item label="Settings"
+        icon="https://api.iconify.design/mdi:cog.svg?color=%23ffffff"&gt;&lt;/bzr-item&gt;
+&lt;/bzr-dial-menu&gt;</code></pre>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== COMING SOON ===== -->
+                <section id="coming-soon" class="mb-16 anchor-offset">
+                    <div class="flex items-center gap-3 mb-2">
+                        <span class="material-symbols-outlined text-amber-500">schedule</span>
+                        <h2 class="text-2xl font-bold uppercase tracking-tight text-amber-500">Coming Soon</h2>
+                    </div>
+                    <p class="text-sm text-gray-400 mb-8">The following features are planned for future releases. Attributes may be observed but not yet functional, or methods are stubbed with TODOs. These will be activated in upcoming versions.</p>
+
+                    <div class="grid md:grid-cols-2 gap-4">
+
+                        <!-- Snap Control -->
+                        <div class="coming-soon-card tactical-border bg-surface-dark/30 border border-amber-500/20 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-amber-500">straighten</span>
+                                    <code class="font-mono text-sm text-amber-400">snap</code>
+                                </div>
+                                <span class="coming-soon-badge">Planned</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Custom snap angle control. Currently auto-calculated as 2π/item count. Will allow manual override (e.g. <code class="font-mono text-xs">30deg</code>) for half-dial and custom layouts.</p>
+                        </div>
+
+                        <!-- Sensitivity -->
+                        <div class="coming-soon-card tactical-border bg-surface-dark/30 border border-amber-500/20 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-amber-500">tune</span>
+                                    <code class="font-mono text-sm text-amber-400">sensitivity</code>
+                                </div>
+                                <span class="coming-soon-badge">Planned</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Adjustable drag sensitivity multiplier. Will control how much physical drag translates to rotational movement. Currently fixed at 1:1 with a 5px movement threshold.</p>
+                        </div>
+
+                        <!-- Snap Feedback -->
+                        <div class="coming-soon-card tactical-border bg-surface-dark/30 border border-amber-500/20 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-amber-500">vibration</span>
+                                    <code class="font-mono text-sm text-amber-400">Snap Feedback Audio</code>
+                                </div>
+                                <span class="coming-soon-badge">Stub</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Sophisticated tick/haptic feedback on snap. The <code class="font-mono text-xs">checkSnapFeedback()</code> method exists as a TODO stub — will produce audio ticks and refined vibration patterns when crossing slot boundaries.</p>
+                        </div>
+
+                        <!-- Inner Jog Dial -->
+                        <div class="coming-soon-card tactical-border bg-surface-dark/30 border border-amber-500/20 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-amber-500">dialpad</span>
+                                    <code class="font-mono text-sm text-amber-400">Inner Jog Dial</code>
+                                </div>
+                                <span class="coming-soon-badge">Reserved</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Secondary inner-ring jog dial for fine-grained navigation. The <code class="font-mono text-xs">drawInnerControls()</code> method is reserved — currently empty to keep the icon path clean.</p>
+                        </div>
+
+                        <!-- Accessibility -->
+                        <div class="coming-soon-card tactical-border bg-surface-dark/30 border border-amber-500/20 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-amber-500">accessibility</span>
+                                    <code class="font-mono text-sm text-amber-400">Keyboard & A11y</code>
+                                </div>
+                                <span class="coming-soon-badge">Planned</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Focus management, keyboard navigation (arrow keys for rotation, Enter to select), ARIA roles, and focus trapping within the dial overlay. Not yet implemented.</p>
+                        </div>
+
+                        <!-- Server License Validation -->
+                        <div class="coming-soon-card tactical-border bg-surface-dark/30 border border-amber-500/20 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-amber-500">verified_user</span>
+                                    <code class="font-mono text-sm text-amber-400">Server License Check</code>
+                                </div>
+                                <span class="coming-soon-badge">Planned</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Server-side license validation. Currently format-only regex check (<code class="font-mono text-xs">BZRD-XXXX-XXXX-XXXX-XXXX</code>). Will validate against the Web Works Systems license server.</p>
+                        </div>
+
+                        <!-- Active Label Display -->
+                        <div class="coming-soon-card tactical-border bg-surface-dark/30 border border-amber-500/20 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-amber-500">label</span>
+                                    <code class="font-mono text-sm text-amber-400">Active Label Overlay</code>
+                                </div>
+                                <span class="coming-soon-badge">In Progress</span>
+                            </div>
+                            <p class="text-xs text-gray-500">The <code class="font-mono text-xs">#active-label</code> element exists in the template and CSS but the label text is not yet populated at runtime. Will display the active item's label prominently at the bottom of the viewport.</p>
+                        </div>
+
+                        <!-- Fullscreen Mode -->
+                        <div class="coming-soon-card tactical-border bg-surface-dark/30 border border-amber-500/20 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-amber-500">fullscreen</span>
+                                    <code class="font-mono text-sm text-amber-400">Fullscreen Media Mode</code>
+                                </div>
+                                <span class="coming-soon-badge">Planned</span>
+                            </div>
+                            <p class="text-xs text-gray-500">CSS class <code class="font-mono text-xs">fullscreen-mode</code> is defined for the content container but not yet applied by JS. Will allow video/image content to expand to full viewport.</p>
+                        </div>
+
+                        <!-- PDF Viewer -->
+                        <div class="coming-soon-card tactical-border bg-surface-dark/30 border border-amber-500/20 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-amber-500">picture_as_pdf</span>
+                                    <code class="font-mono text-sm text-amber-400">data-pdf</code>
+                                </div>
+                                <span class="coming-soon-badge">Roadmap</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Inline PDF viewer attribute. Will render PDFs in the content overlay modal with page navigation controls.</p>
+                        </div>
+
+                        <!-- Image Gallery -->
+                        <div class="coming-soon-card tactical-border bg-surface-dark/30 border border-amber-500/20 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-amber-500">photo_library</span>
+                                    <code class="font-mono text-sm text-amber-400">Image Gallery</code>
+                                </div>
+                                <span class="coming-soon-badge">Roadmap</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Lightbox-style image gallery mode. Will support multiple images with swipe navigation, zoom, and captions.</p>
+                        </div>
+
+                        <!-- Calendar -->
+                        <div class="coming-soon-card tactical-border bg-surface-dark/30 border border-amber-500/20 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-amber-500">calendar_month</span>
+                                    <code class="font-mono text-sm text-amber-400">Calendar / Date Picker</code>
+                                </div>
+                                <span class="coming-soon-badge">Roadmap</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Inline calendar/date picker interface accessible from a dial item. Will integrate with form workflows.</p>
+                        </div>
+
+                        <!-- Form Builder -->
+                        <div class="coming-soon-card tactical-border bg-surface-dark/30 border border-amber-500/20 rounded-lg p-6">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2">
+                                    <span class="material-symbols-outlined text-amber-500">dynamic_form</span>
+                                    <code class="font-mono text-sm text-amber-400">Form Builder</code>
+                                </div>
+                                <span class="coming-soon-badge">Roadmap</span>
+                            </div>
+                            <p class="text-xs text-gray-500">Declarative form configuration via data attributes. Will render custom forms in the content overlay with field types, validation, and submission.</p>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- ===== BROWSER SUPPORT ===== -->
+                <section id="browser-support" class="mb-16 anchor-offset">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">public</span>
+                        Browser Support
+                    </h2>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6 text-center">
+                            <span class="material-symbols-outlined text-primary text-3xl mb-2 block">✅</span>
+                            <div class="text-sm font-bold">Chrome / Edge</div>
+                            <div class="text-xs text-gray-500">Latest</div>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6 text-center">
+                            <span class="material-symbols-outlined text-primary text-3xl mb-2 block">✅</span>
+                            <div class="text-sm font-bold">Firefox</div>
+                            <div class="text-xs text-gray-500">Latest</div>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6 text-center">
+                            <span class="material-symbols-outlined text-primary text-3xl mb-2 block">✅</span>
+                            <div class="text-sm font-bold">Safari</div>
+                            <div class="text-xs text-gray-500">Latest</div>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6 text-center">
+                            <span class="material-symbols-outlined text-primary text-3xl mb-2 block">✅</span>
+                            <div class="text-sm font-bold">Mobile Browsers</div>
+                            <div class="text-xs text-gray-500">iOS Safari, Chrome Mobile</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                        <h3 class="text-sm font-bold uppercase tracking-wide text-primary mb-3">Requirements</h3>
+                        <ul class="text-sm text-gray-400 space-y-2">
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm">check</span> Custom Elements v1 (Web Components)</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm">check</span> Shadow DOM</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm">check</span> ES6 JavaScript</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm">check</span> Canvas 2D API</li>
+                            <li class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-sm">check</span> Pointer / Touch Events</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <!-- ===== TROUBLESHOOTING ===== -->
+                <section id="troubleshooting" class="mb-16 anchor-offset">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">build</span>
+                        Troubleshooting
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <h3 class="text-sm font-bold text-primary mb-2">Icons not showing?</h3>
+                            <ul class="text-xs text-gray-400 space-y-1 ml-4 list-disc">
+                                <li>Verify icon URLs resolve (check Network tab for 404s)</li>
+                                <li>Ensure icon files have correct permissions (644, www-data readable)</li>
+                                <li>Check CORS headers if loading icons from a different domain</li>
+                                <li>Use 40×40px SVG icons for optimal rendering</li>
+                            </ul>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <h3 class="text-sm font-bold text-primary mb-2">Dial not rotating correctly?</h3>
+                            <ul class="text-xs text-gray-400 space-y-1 ml-4 list-disc">
+                                <li>Ensure the <code class="font-mono text-xs">justify</code> attribute matches your layout direction</li>
+                                <li>Check that the FAB has enough viewport space — don't trap it behind other fixed elements</li>
+                                <li>The rotation pivot is the FAB center, not the screen center</li>
+                            </ul>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <h3 class="text-sm font-bold text-primary mb-2">Component not mounting?</h3>
+                            <ul class="text-xs text-gray-400 space-y-1 ml-4 list-disc">
+                                <li>Ensure <code class="font-mono text-xs">bzr-dial-menu.js</code> loads before injecting <code class="font-mono text-xs">&lt;bzr-dial-menu&gt;</code> DOM</li>
+                                <li>Use <code class="font-mono text-xs">customElements.whenDefined('bzr-dial-menu')</code> before DOM injection</li>
+                                <li>Check browser console for registration errors</li>
+                            </ul>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <h3 class="text-sm font-bold text-primary mb-2">Audio visualizer not working?</h3>
+                            <ul class="text-xs text-gray-400 space-y-1 ml-4 list-disc">
+                                <li>WebAudio <code class="font-mono text-xs">createMediaElementSource</code> requires same-origin audio files or proper CORS headers</li>
+                                <li>Set <code class="font-mono text-xs">crossOrigin="anonymous"</code> on cross-origin audio (already done by component)</li>
+                            </ul>
+                        </div>
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <h3 class="text-sm font-bold text-primary mb-2">Performance issues?</h3>
+                            <ul class="text-xs text-gray-400 space-y-1 ml-4 list-disc">
+                                <li>Keep item count under 10 (4–8 is optimal)</li>
+                                <li>Use optimized SVG icons (under 1KB each)</li>
+                                <li>The rAF loop runs continuously — ensure the page isn't running heavy JS elsewhere</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== CHANGELOG ===== -->
+                <section id="changelog" class="mb-16 anchor-offset">
+                    <h2 class="text-2xl font-bold uppercase tracking-tight mb-6 flex items-center gap-3">
+                        <span class="material-symbols-outlined text-primary">history</span>
+                        Changelog
+                    </h2>
+                    <div class="space-y-4">
+                        <div class="tactical-border bg-surface-dark/50 border border-surface-border rounded-lg p-6">
+                            <div class="flex items-center gap-3 mb-3">
+                                <span class="impl-badge">v1.0.0-mvp</span>
+                                <span class="text-xs text-gray-500">June 2026</span>
+                            </div>
+                            <h3 class="text-sm font-bold text-primary mb-2">Initial MVP Release</h3>
+                            <ul class="text-xs text-gray-400 space-y-1 ml-4 list-disc">
+                                <li>Physics-based radial dial with inertial scrolling and spring snapping</li>
+                                <li>Shadow DOM encapsulated — zero CSS leakage</li>
+                                <li>Canvas-rendered rail with velocity-warp arc visualization</li>
+                                <li>Inline content modal system: audio (with visualizer), video, image, email, phone, map, iframe</li>
+                                <li>Slide-to-reposition FAB via double-click</li>
+                                <li>Icon swipe-to-snap quick navigation</li>
+                                <li>Custom <code class="font-mono text-xs">bzr-change</code> event</li>
+                                <li>License key validation (format-only)</li>
+                                <li>Haptic feedback (Vibration API)</li>
+                                <li>Responsive resize handling</li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Footer -->
+                <div class="border-t border-surface-border pt-8 mt-8">
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+                        <div class="flex items-center gap-3 text-primary">
+                            <div class="relative size-6 flex items-center justify-center border border-primary/30 rounded bg-primary/10">
+                                <span class="material-symbols-outlined text-sm">center_focus_strong</span>
+                            </div>
+                            <span class="text-sm font-bold uppercase tracking-tight">bzr-dial<span class="text-primary">.ui</span></span>
+                        </div>
+                        <p class="text-xs text-gray-500">Built by <a href="/" class="text-primary underline">Web Works Systems</a>. Part of The Conglomerate Group. The code executes.</p>
+                    </div>
+                </div>
+
+            </main>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
