@@ -56,6 +56,7 @@ class EmailService {
         const licenseTypeNames = {
             single: 'Single License',
             team: 'Team License',
+            eval: 'Evaluation License',
             enterprise: 'Enterprise License'
         };
 
@@ -158,7 +159,7 @@ class EmailService {
                 <li>Complete documentation</li>
                 <li>Working examples</li>
                 <li>Lifetime updates</li>
-                <li>${type === 'team' ? 'Priority support' : 'Email support'}</li>
+                <li>${type === 'team' ? 'Priority support' : type === 'eval' ? 'Community support (30 days)' : 'Email support'}</li>
             </ul>
         </div>
         

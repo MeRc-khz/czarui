@@ -57,15 +57,20 @@ app.post('/api/create-checkout-session', async (req, res) => {
         const { plan } = req.body;
 
         // Validate plan
-        const validPlans = ['single', 'team'];
+        const validPlans = ['single', 'team', 'eval'];
         if (!validPlans.includes(plan)) {
             return res.status(400).json({ error: 'Invalid plan' });
         }
 
         // Get price ID from environment
-        const priceId = plan === 'single'
-            ? process.env.STRIPE_PRICE_SINGLE
-            : process.env.STRIPE_PRICE_TEAM;
+        let priceId;
+        if (plan === 'single') {
+            priceId = process.env.STRIPE_PRICE_SINGLE;
+        } else if (plan === 'team') {
+            priceId = process.env.STRIPE_PRICE_TEAM;
+        } else if (plan === 'eval') {
+            priceId = process.env.STRIPE_PRICE_EVAL;
+        }
 
         // Create checkout session
         const session = await stripe.checkout.sessions.create({
@@ -74,7 +79,7 @@ app.post('/api/create-checkout-session', async (req, res) => {
                 price: priceId,
                 quantity: 1,
             }],
-            mode: 'payment',
+            mode: plan === 'eval' ? 'subscription' : 'payment',
             success_url: `${process.env.FRONTEND_URL}/success.html?session_id={CHECKOUT_SESSION_ID}`,
             cancel_url: `${process.env.FRONTEND_URL}/landing/index.html`,
             metadata: {
@@ -123,6 +128,13 @@ app.post('/webhook', async (req, res) => {
             await handleSuccessfulPayment(session);
             break;
 
+        case 'customer.subscription.updated':
+        case 'customer.subscription.deleted':
+        case 'invoice.payment_failed':
+            // Handle evaluation subscription lifecycle
+            await handleSubscriptionEvent(event);
+            break;
+
         case 'payment_intent.succeeded':
             console.log('Payment succeeded:', event.data.object.id);
             break;
@@ -144,7 +156,16 @@ async function handleSuccessfulPayment(session) {
 
         console.log(`Processing payment for ${customer_email} - ${license_type}`);
 
-        // Generate license
+        // For evaluation tier, we don't generate a traditional license key
+        // Instead we grant CDN access for 30 days
+        if (license_type === 'eval') {
+            // Could store subscription info for webhook-based access control
+            console.log(`Evaluation subscription started for ${customer_email}: ${session.id}`);
+            // In production: store subscription_id, customer_id, current_period_end
+            return;
+        }
+
+        // Generate license for single/team
         const license = licenseManager.createLicense(
             customer_email,
             license_type,
@@ -167,6 +188,22 @@ async function handleSuccessfulPayment(session) {
         console.error('Payment handling error:', error);
         // In production, you'd want to retry or alert admins
     }
+}
+
+/**
+ * Handle evaluation subscription lifecycle events
+ */
+async function handleSubscriptionEvent(event) {
+    const subscription = event.data.object;
+    const customerId = subscription.customer;
+    const status = subscription.status;
+    const currentPeriodEnd = subscription.current_period_end;
+
+    console.log(`Subscription ${event.type} for customer ${customerId}: ${status}`);
+
+    // In production: store subscription state in DB for access control
+    // Could track: customer_id, subscription_id, status, current_period_end, license_type: 'eval'
+    // Then use this to validate CDN access for evaluation users
 }
 
 /**

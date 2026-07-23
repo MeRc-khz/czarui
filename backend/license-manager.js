@@ -95,7 +95,7 @@ class LicenseManager {
     /**
      * Create license object with metadata
      * @param {string} email - Customer email
-     * @param {string} type - License type
+     * @param {string} type - License type (single, team, eval)
      * @param {object} metadata - Additional metadata
      * @returns {object} License object
      */
@@ -103,19 +103,34 @@ class LicenseManager {
         const key = this.generate(email, type);
         const downloadToken = this.generateDownloadToken(key);
 
-        return {
+        // For eval tier, license expires with subscription; use CDN if available
+        const downloadUrl = type === 'eval' && process.env.CDN_BASE_URL
+            ? `${process.env.CDN_BASE_URL}/bzr-dial-menu.js`
+            : `${process.env.DOWNLOAD_BASE_URL}/${key}?token=${downloadToken}`;
+
+        const license = {
             key,
             email,
             type,
             createdAt: new Date().toISOString(),
             downloadToken,
-            downloadUrl: `${process.env.DOWNLOAD_BASE_URL}/${key}?token=${downloadToken}`,
+            downloadUrl,
             metadata: {
                 ...metadata,
                 version: '1.0.0',
                 product: 'bzr-dial-ui'
             }
         };
+
+        // Add expiry for eval tier (30 days from creation)
+        if (type === 'eval') {
+            const expiry = new Date();
+            expiry.setDate(expiry.getDate() + 30);
+            license.expiresAt = expiry.toISOString();
+            license.metadata.subscriptionTier = 'evaluation';
+        }
+
+        return license;
     }
 }
 
